@@ -6,6 +6,7 @@ import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.post.converter.ImportantKeyTypeConverter;
 import org.gachon.checkmate.domain.post.converter.SimilarityKeyTypeConverter;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
+import org.gachon.checkmate.global.common.BaseTimeEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 @Entity
-public class Post {
+public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")

@@ -3,13 +3,14 @@ package org.gachon.checkmate.domain.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.member.entity.User;
+import org.gachon.checkmate.global.common.BaseTimeEntity;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @Getter
 @Entity
-public class PostMaker {
+public class PostMaker extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_post_id")
