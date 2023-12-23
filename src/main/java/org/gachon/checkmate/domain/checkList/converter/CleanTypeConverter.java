@@ -6,7 +6,7 @@ import org.gachon.checkmate.global.utils.AbstractEnumCodeAttributeConverter;
 
 @Converter
 public class CleanTypeConverter extends AbstractEnumCodeAttributeConverter<CleanType> {
-    public CleanTypeConverter(){
+    public CleanTypeConverter() {
         super(CleanType.class);
     }
 }
