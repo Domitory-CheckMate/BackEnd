@@ -1,0 +1,12 @@
+package org.gachon.checkmate.domain.post.converter;
+
+import jakarta.persistence.Converter;
+import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
+import org.gachon.checkmate.global.utils.AbstractEnumCodeAttributeConverter;
+
+@Converter
+public class ImportantKeyTypeConverter extends AbstractEnumCodeAttributeConverter<ImportantKeyType> {
+    public ImportantKeyTypeConverter() {
+        super(ImportantKeyType.class);
+    }
+}
