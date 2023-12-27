@@ -19,8 +19,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/email")
-    public ResponseEntity<SuccessResponse<?>> sendMail(@RequestBody EmailPostRequestDto emailPostRequestDto) {
-        final EmailResponseDto emailResponseDto = memberService.sendMail(emailPostRequestDto, "email");
+    public ResponseEntity<SuccessResponse<?>> sendMail(@RequestBody final EmailPostRequestDto emailPostRequestDto) {
+        final EmailResponseDto emailResponseDto = memberService.sendMail(emailPostRequestDto);
         return SuccessResponse.ok(emailResponseDto);
     }
 }
