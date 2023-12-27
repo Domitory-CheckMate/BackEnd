@@ -40,7 +40,7 @@ public class MailProvider {
         }
     }
 
-    public static String createNumericCode() {
+    private static String createNumericCode() {
         Random random = new Random();
         StringBuilder code = new StringBuilder();
         for (int i = 0; i < 6; i++) {
@@ -49,7 +49,7 @@ public class MailProvider {
         return code.toString();
     }
 
-    public String setContext(String code, String type) {
+    private String setContext(String code, String type) {
         Context context = new Context();
         context.setVariable("code", code);
         return templateEngine.process(type, context);
