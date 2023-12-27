@@ -5,7 +5,6 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
-import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
 import org.gachon.checkmate.global.error.exception.InternalServerException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -25,16 +24,16 @@ public class MailProvider {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    public EmailResponseDto sendMail(EmailPostRequestDto emailPostRequestDto, String type) {
+    public String sendMail(String email, String type) {
         String authNum = createNumericCode();
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(emailPostRequestDto.email()); // 메일 수신자
+            mimeMessageHelper.setTo(email); // 메일 수신자
             mimeMessageHelper.setSubject("[CHECKMATE] 이메일 인증번호 발송"); // 메일 제목
             mimeMessageHelper.setText(setContext(authNum, type), true); // 메일 본문
             javaMailSender.send(mimeMessage);
-            return new EmailResponseDto(authNum);
+            return authNum;
         } catch (MessagingException e) {
             throw new InternalServerException(EMAIL_SEND_ERROR);
         }

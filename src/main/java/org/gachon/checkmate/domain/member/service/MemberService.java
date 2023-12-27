@@ -19,7 +19,8 @@ public class MemberService {
     private final MailProvider mailProvider;
 
     public EmailResponseDto sendMail(EmailPostRequestDto emailPostRequestDto) {
-        return mailProvider.sendMail(emailPostRequestDto, "email");
+        String authNum = mailProvider.sendMail(emailPostRequestDto.email(), "email");
+        return new EmailResponseDto(authNum);
     }
 
 }
