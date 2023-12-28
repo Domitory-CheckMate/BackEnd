@@ -27,7 +27,7 @@ public class Post extends BaseTimeEntity {
     private Long id;
     private String title;
     private String content;
-    private LocalDate EndDate;
+    private LocalDate endDate;
     @Convert(converter = RoomTypeConverter.class)
     private RoomType roomType;
     @Convert(converter = ImportantKeyTypeConverter.class)
