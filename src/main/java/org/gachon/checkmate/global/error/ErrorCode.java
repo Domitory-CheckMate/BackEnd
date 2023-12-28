@@ -35,6 +35,7 @@ public enum ErrorCode {
      * 404 Not Found
      */
     ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "엔티티를 찾을 수 없습니다."),
+    CHECK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다."),
 
     /**
      * 405 Method Not Allowed
