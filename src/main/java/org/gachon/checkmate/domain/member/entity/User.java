@@ -6,7 +6,7 @@ import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.member.converter.GenderTypeConverter;
 import org.gachon.checkmate.domain.member.converter.MbtiTypeConverter;
 import org.gachon.checkmate.domain.member.converter.RoomTypeConverter;
-import org.gachon.checkmate.domain.post.entity.PostMaker;
+import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
@@ -40,7 +40,7 @@ public class User extends BaseTimeEntity {
     private CheckList checkList;
     @OneToMany(mappedBy = "user")
     @Builder.Default
-    private List<PostMaker> postMakerList = new ArrayList<>();
+    private List<Post> postList = new ArrayList<>();
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
