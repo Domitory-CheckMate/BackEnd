@@ -5,6 +5,7 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.member.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.member.entity.RoomType;
+import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.post.converter.ImportantKeyTypeConverter;
 import org.gachon.checkmate.domain.post.converter.SimilarityKeyTypeConverter;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
@@ -26,7 +27,7 @@ public class Post extends BaseTimeEntity {
     private Long id;
     private String title;
     private String content;
-    private LocalDate EndDate;
+    private LocalDate endDate;
     @Convert(converter = RoomTypeConverter.class)
     private RoomType roomType;
     @Convert(converter = ImportantKeyTypeConverter.class)
@@ -35,9 +36,9 @@ public class Post extends BaseTimeEntity {
     private SimilarityKeyType similarityKeyType;
     @OneToOne(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private PostCheckList postCheckList;
-    @OneToMany(mappedBy = "post")
-    @Builder.Default
-    private List<PostMaker> postMakerList = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
     @OneToMany(mappedBy = "post")
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
