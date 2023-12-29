@@ -47,17 +47,17 @@ public class PostService {
 
     private int getAccuracy(PostCheckList postCheckList, CheckList checkList) {
         int count = 0;
-        count += getRateForFrequencyElement(postCheckList.getCleanType().getCode(), checkList.getCleanType().getCode());
-        count += getRateForFrequencyElement(postCheckList.getDrinkType().getCode(), checkList.getDrinkType().getCode());
-        count += getRateForFrequencyElement(postCheckList.getHomeType().getCode(), checkList.getHomeType().getCode());
+        count += getRateForFrequencyElement(postCheckList.getCleanType().getCode(), checkList.getCleanType().getCode(), 5);
+        count += getRateForFrequencyElement(postCheckList.getDrinkType().getCode(), checkList.getDrinkType().getCode(), 4);
+        count += getRateForFrequencyElement(postCheckList.getHomeType().getCode(), checkList.getHomeType().getCode(), 4);
         count = postCheckList.getLifePatterType().equals(checkList.getLifePatterType()) ? count + 1 : count;
         count = postCheckList.getNoiseType().equals(checkList.getNoiseType()) ? count + 1 : count;
         count = postCheckList.getSleepType().equals(checkList.getSleepType()) ? count + 1 : count;
         return (int) (count / 6) * 100;
     }
 
-    private int getRateForFrequencyElement(String firstEnumCode, String secondEnumCode) {
-        return 1 - Math.abs(Integer.parseInt(firstEnumCode) - Integer.parseInt(secondEnumCode));
+    private int getRateForFrequencyElement(String firstEnumCode, String secondEnumCode, int size) {
+        return 1 - Math.abs(Integer.parseInt(firstEnumCode) - Integer.parseInt(secondEnumCode)) / size;
     }
 
     private int getRemainDate(LocalDate endDate) {
