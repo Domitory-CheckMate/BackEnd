@@ -30,8 +30,6 @@ public class User extends BaseTimeEntity {
     private String profile;
     private String school;
     private String major;
-    @Convert(converter = RoomTypeConverter.class)
-    private RoomType roomType;
     @Convert(converter = MbtiTypeConverter.class)
     private MbtiType mbtiType;
     @Convert(converter = GenderTypeConverter.class)
