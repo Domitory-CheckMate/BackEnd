@@ -42,4 +42,17 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
+
+    public static User createUser(String email, String storedPassword, String name, String school, String major, MbtiType mbti, GenderType gender){
+        return User.builder()
+                .email(email)
+                .password(storedPassword)
+                .name(name)
+                .profile(ProfileImageType.PROFILE_1.getImageUrl())
+                .school(school)
+                .major(major)
+                .mbtiType(mbti)
+                .gender(gender)
+                .build();
+    }
 }
