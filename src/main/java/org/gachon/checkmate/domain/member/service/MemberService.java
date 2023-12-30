@@ -40,19 +40,23 @@ public class MemberService {
 
     public MemberSignUpResponseDto signUp(MemberSignUpRequestDto memberSignUpRequestDto) {
         Long newMemberId = createMember(memberSignUpRequestDto);
-        String accessToken = issueNewToken(newMemberId);
-        String refreshToken = issueNewToken(newMemberId);
+        String accessToken = issueNewAccessToken(newMemberId);
+        String refreshToken = issueNewRefreshToken(newMemberId);
         return MemberSignUpResponseDto.of(newMemberId, memberSignUpRequestDto.name(), accessToken, refreshToken);
     }
 
     public MemberSignInResponseDto signIn(MemberSignInRequestDto memberSignInRequestDto) {
         User user = getUserFromEmail(memberSignInRequestDto.email());
-        if (!authenticatePassword(memberSignInRequestDto.password(), user.getPassword())) {
+        validatePassword(memberSignInRequestDto.password(), user.getPassword());
+        String accessToken = issueNewAccessToken(user.getId());
+        String refreshToken = issueNewRefreshToken(user.getId());
+        return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
+    }
+
+    private void validatePassword(String enteredPassword, String storedPassword) {
+        if (!authenticatePassword(enteredPassword, storedPassword)) {
             throw new UnauthorizedException(INVALID_PASSWORD);
         }
-        String accessToken = issueNewToken(user.getId());
-        String refreshToken = issueNewToken(user.getId());
-        return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
     }
 
     private void checkDuplicateEmail(String email) {
@@ -61,8 +65,12 @@ public class MemberService {
         }
     }
 
-    private String issueNewToken(Long memberId) {
+    private String issueNewAccessToken(Long memberId) {
         return jwtProvider.getIssueToken(memberId, true);
+    }
+
+    private String issueNewRefreshToken(Long memberId) {
+        return jwtProvider.getIssueToken(memberId, false);
     }
 
     private Long createMember(MemberSignUpRequestDto memberSignUpRequestDto) {
