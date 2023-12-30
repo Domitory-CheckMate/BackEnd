@@ -2,8 +2,10 @@ package org.gachon.checkmate.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
+import org.gachon.checkmate.domain.member.dto.request.MemberSignInRequestDto;
 import org.gachon.checkmate.domain.member.dto.request.MemberSignUpRequestDto;
 import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
+import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
 import org.gachon.checkmate.domain.member.service.MemberService;
 import org.gachon.checkmate.global.common.SuccessResponse;
@@ -30,6 +32,12 @@ public class MemberController {
     public ResponseEntity<SuccessResponse<?>> signUp(@RequestBody final MemberSignUpRequestDto memberSignUpRequestDto){
         final MemberSignUpResponseDto memberSignUpResponseDto = memberService.signUp(memberSignUpRequestDto);
         return SuccessResponse.ok(memberSignUpResponseDto);
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<SuccessResponse<?>> signIn(@RequestBody final MemberSignInRequestDto memberSignInRequestDto){
+        final MemberSignInResponseDto memberSignInResponseDto = memberService.signIn(memberSignInRequestDto);
+        return SuccessResponse.ok(memberSignInResponseDto);
     }
 
 }
