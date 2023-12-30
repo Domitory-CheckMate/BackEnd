@@ -4,16 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
 import org.gachon.checkmate.domain.member.dto.request.MemberSignInRequestDto;
 import org.gachon.checkmate.domain.member.dto.request.MemberSignUpRequestDto;
+import org.gachon.checkmate.domain.member.dto.request.PasswordResetRequestDto;
 import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
 import org.gachon.checkmate.domain.member.service.MemberService;
 import org.gachon.checkmate.global.common.SuccessResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
@@ -40,4 +38,9 @@ public class MemberController {
         return SuccessResponse.ok(memberSignInResponseDto);
     }
 
+    @PatchMapping("/reset")
+    public ResponseEntity<SuccessResponse<?>> setPassword(@RequestBody final PasswordResetRequestDto passwordResetRequestDto){
+        memberService.setPassword(passwordResetRequestDto);
+        return SuccessResponse.ok(null);
+    }
 }
