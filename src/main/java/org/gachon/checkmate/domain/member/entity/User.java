@@ -5,7 +5,7 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.member.converter.GenderTypeConverter;
 import org.gachon.checkmate.domain.member.converter.MbtiTypeConverter;
-import org.gachon.checkmate.domain.member.converter.RoomTypeConverter;
+import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;

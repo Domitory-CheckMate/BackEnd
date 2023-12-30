@@ -3,7 +3,7 @@ package org.gachon.checkmate.domain.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
-import org.gachon.checkmate.domain.member.converter.RoomTypeConverter;
+import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.member.entity.RoomType;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.post.converter.ImportantKeyTypeConverter;
