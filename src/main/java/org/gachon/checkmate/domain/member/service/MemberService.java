@@ -34,7 +34,7 @@ public class MemberService {
         Long newMemberId = createMember(memberSignUpRequestDto);
         String accessToken = issueNewToken(newMemberId);
         String refreshToken = issueNewToken(newMemberId);
-        return MemberSignUpResponseDto.of(memberSignUpRequestDto.name(), accessToken, refreshToken);
+        return MemberSignUpResponseDto.of(newMemberId, memberSignUpRequestDto.name(), accessToken, refreshToken);
     }
 
     private String issueNewToken(Long memberId) {
