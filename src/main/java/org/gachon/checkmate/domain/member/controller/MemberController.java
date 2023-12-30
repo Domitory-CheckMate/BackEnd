@@ -2,7 +2,9 @@ package org.gachon.checkmate.domain.member.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
+import org.gachon.checkmate.domain.member.dto.request.MemberSignUpRequestDto;
 import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
+import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
 import org.gachon.checkmate.domain.member.service.MemberService;
 import org.gachon.checkmate.global.common.SuccessResponse;
 import org.springframework.http.ResponseEntity;
@@ -23,4 +25,11 @@ public class MemberController {
         final EmailResponseDto emailResponseDto = memberService.sendMail(emailPostRequestDto);
         return SuccessResponse.ok(emailResponseDto);
     }
+
+    @PostMapping("/signup")
+    public ResponseEntity<SuccessResponse<?>> signUp(@RequestBody final MemberSignUpRequestDto memberSignUpRequestDto){
+        final MemberSignUpResponseDto memberSignUpResponseDto = memberService.signUp(memberSignUpRequestDto);
+        return SuccessResponse.ok(memberSignUpResponseDto);
+    }
+
 }
