@@ -55,4 +55,8 @@ public class User extends BaseTimeEntity {
                 .gender(gender)
                 .build();
     }
+
+    public void setPassword(String newPassword) {
+        this.password = newPassword;
+    }
 }

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
 import org.gachon.checkmate.domain.member.dto.request.MemberSignInRequestDto;
 import org.gachon.checkmate.domain.member.dto.request.MemberSignUpRequestDto;
+import org.gachon.checkmate.domain.member.dto.request.PasswordResetRequestDto;
 import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
@@ -51,6 +52,11 @@ public class MemberService {
         String accessToken = issueNewAccessToken(user.getId());
         String refreshToken = issueNewRefreshToken(user.getId());
         return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
+    }
+
+    public void setPassword(PasswordResetRequestDto passwordResetRequestDto){
+        User user = getUserFromEmail(passwordResetRequestDto.email());
+        user.setPassword(encodedPassword(passwordResetRequestDto.newPassword()));
     }
 
     private void validatePassword(String enteredPassword, String storedPassword) {
