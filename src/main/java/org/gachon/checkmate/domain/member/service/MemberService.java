@@ -12,14 +12,14 @@ import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
 import org.gachon.checkmate.global.config.auth.jwt.JwtProvider;
 import org.gachon.checkmate.global.config.mail.MailProvider;
+import org.gachon.checkmate.global.error.exception.ConflictException;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.error.exception.UnauthorizedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.gachon.checkmate.global.error.ErrorCode.INVALID_PASSWORD;
-import static org.gachon.checkmate.global.error.ErrorCode.USER_NOT_FOUND;
+import static org.gachon.checkmate.global.error.ErrorCode.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,6 +33,7 @@ public class MemberService {
     private final UserRepository userRepository;
 
     public EmailResponseDto sendMail(EmailPostRequestDto emailPostRequestDto) {
+        checkDuplicateEmail(emailPostRequestDto.email());
         String authNum = mailProvider.sendMail(emailPostRequestDto.email(), "email");
         return new EmailResponseDto(authNum);
     }
@@ -44,7 +45,7 @@ public class MemberService {
         return MemberSignUpResponseDto.of(newMemberId, memberSignUpRequestDto.name(), accessToken, refreshToken);
     }
 
-    public MemberSignInResponseDto signIn(MemberSignInRequestDto memberSignInRequestDto){
+    public MemberSignInResponseDto signIn(MemberSignInRequestDto memberSignInRequestDto) {
         User user = getUserFromEmail(memberSignInRequestDto.email());
         if (!authenticatePassword(memberSignInRequestDto.password(), user.getPassword())) {
             throw new UnauthorizedException(INVALID_PASSWORD);
@@ -52,6 +53,12 @@ public class MemberService {
         String accessToken = issueNewToken(user.getId());
         String refreshToken = issueNewToken(user.getId());
         return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
+    }
+
+    private void checkDuplicateEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new ConflictException(DUPLICATE_EMAIL);
+        }
     }
 
     private String issueNewToken(Long memberId) {
