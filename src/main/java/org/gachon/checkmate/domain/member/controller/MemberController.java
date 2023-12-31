@@ -29,7 +29,7 @@ public class MemberController {
     @PostMapping("/signup")
     public ResponseEntity<SuccessResponse<?>> signUp(@RequestBody final MemberSignUpRequestDto memberSignUpRequestDto){
         final MemberSignUpResponseDto memberSignUpResponseDto = memberService.signUp(memberSignUpRequestDto);
-        return SuccessResponse.ok(memberSignUpResponseDto);
+        return SuccessResponse.created(memberSignUpResponseDto);
     }
 
     @PostMapping("/signin")
