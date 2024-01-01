@@ -1,4 +1,4 @@
-package org.gachon.checkmate.domain.member.entity;
+package org.gachon.checkmate.domain.post.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
