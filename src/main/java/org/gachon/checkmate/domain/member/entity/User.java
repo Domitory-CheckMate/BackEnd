@@ -5,7 +5,7 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.member.converter.GenderTypeConverter;
 import org.gachon.checkmate.domain.member.converter.MbtiTypeConverter;
-import org.gachon.checkmate.domain.member.converter.RoomTypeConverter;
+import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
@@ -30,8 +30,6 @@ public class User extends BaseTimeEntity {
     private String profile;
     private String school;
     private String major;
-    @Convert(converter = RoomTypeConverter.class)
-    private RoomType roomType;
     @Convert(converter = MbtiTypeConverter.class)
     private MbtiType mbtiType;
     @Convert(converter = GenderTypeConverter.class)
@@ -44,4 +42,21 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user")
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
+
+    public static User createUser(String email, String storedPassword, String name, String school, String major, MbtiType mbti, GenderType gender){
+        return User.builder()
+                .email(email)
+                .password(storedPassword)
+                .name(name)
+                .profile(ProfileImageType.PROFILE_1.getImageUrl())
+                .school(school)
+                .major(major)
+                .mbtiType(mbti)
+                .gender(gender)
+                .build();
+    }
+
+    public void setPassword(String newPassword) {
+        this.password = newPassword;
+    }
 }
