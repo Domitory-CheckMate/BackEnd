@@ -7,12 +7,7 @@ import org.gachon.checkmate.global.common.SuccessResponse;
 import org.gachon.checkmate.global.config.auth.UserId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/post")
@@ -24,7 +19,15 @@ public class PostController {
     public ResponseEntity<SuccessResponse<?>> searchTextPost(@UserId final Long userId,
                                                              @RequestParam final String text,
                                                              final Pageable pageable) {
-        final List<PostSearchResponseDto> responseDto = postService.searchTextPost(userId, text, pageable);
+        final PostSearchResponseDto responseDto = postService.searchTextPost(userId, text, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
+    @GetMapping("/search/{key}")
+    public ResponseEntity<SuccessResponse<?>> searchKeyWordPost(@UserId final Long userId,
+                                                                @PathVariable final String key,
+                                                                final Pageable pageable) {
+        final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, pageable);
         return SuccessResponse.ok(responseDto);
     }
 }
