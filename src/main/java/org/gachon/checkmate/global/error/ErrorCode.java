@@ -13,6 +13,7 @@ public enum ErrorCode {
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     INVALID_ENUM_CODE(HttpStatus.BAD_REQUEST, "잘못된 Enum class code 입니다."),
+    INVALID_PAGING_SIZE(HttpStatus.BAD_REQUEST, "잘못된 Paging 크기입니다."),
 
     /**
      * 401 Unauthorized
