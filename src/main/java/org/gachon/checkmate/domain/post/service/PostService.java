@@ -11,7 +11,6 @@ import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
-import org.gachon.checkmate.global.utils.EnumValueUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +34,17 @@ import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 public class PostService {
     private final CheckListRepository checkListRepository;
     private final PostQuerydslRepository postQuerydslRepository;
+
+    public PostSearchResponseDto getAllPosts(Long userId, String type, Pageable pageable) {
+        CheckList checkList = getCheckList(userId);
+        SortType sortType = toEntityCode(SortType.class, type);
+        Page<PostSearchDto> postSearchList = getAllPostsResults(pageable);
+        List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
+        sortByTypeForSearchResults(searchResults, Objects.requireNonNull(sortType));
+        List<PostSearchElementResponseDto> pagingSearchResults
+                = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
+        return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
+    }
 
     public PostSearchResponseDto searchKeyWordPost(Long userId, String key, String type, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
@@ -98,6 +107,10 @@ public class PostService {
 
     private int getRemainDate(LocalDate endDate) {
         return (int) endDate.until(LocalDate.now(), ChronoUnit.DAYS);
+    }
+
+    private Page<PostSearchDto> getAllPostsResults(Pageable pageable) {
+        return postQuerydslRepository.findAllPosts(pageable);
     }
 
     private Page<PostSearchDto> getKeySearchResults(ImportantKeyType importantKeyType, Pageable pageable) {

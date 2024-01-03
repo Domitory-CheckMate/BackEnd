@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class PostController {
     private final PostService postService;
 
-    @GetMapping("/search")
-    public ResponseEntity<SuccessResponse<?>> searchTextPost(@UserId final Long userId,
-                                                             @RequestParam final String text,
-                                                             final Pageable pageable) {
-        final PostSearchResponseDto responseDto = postService.searchTextPost(userId, text, pageable);
+    @GetMapping
+    public ResponseEntity<SuccessResponse<?>> getAllPosts(@UserId final Long userId,
+                                                          @RequestParam final String type,
+                                                          final Pageable pageable){
+        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, type, pageable);
         return SuccessResponse.ok(responseDto);
     }
 
@@ -29,6 +29,14 @@ public class PostController {
                                                                 @RequestParam final String type,
                                                                 final Pageable pageable) {
         final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, type, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SuccessResponse<?>> searchTextPost(@UserId final Long userId,
+                                                             @RequestParam final String text,
+                                                             final Pageable pageable) {
+        final PostSearchResponseDto responseDto = postService.searchTextPost(userId, text, pageable);
         return SuccessResponse.ok(responseDto);
     }
 }

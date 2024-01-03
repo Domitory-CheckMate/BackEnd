@@ -24,6 +24,29 @@ import static org.gachon.checkmate.domain.post.entity.QPost.post;
 public class PostQuerydslRepository {
     private final JPAQueryFactory queryFactory;
 
+    public Page<PostSearchDto> findAllPosts(Pageable pageable) {
+        List<PostSearchDto> content = queryFactory
+                .select(new QPostSearchDto(
+                        post.title,
+                        post.content,
+                        post.importantKeyType,
+                        post.similarityKeyType,
+                        post.endDate,
+                        post.scrapList.size(),
+                        postCheckList
+                ))
+                .from(post)
+                .leftJoin(post.postCheckList, postCheckList)
+                .where(
+                        validatePostDate()
+                )
+                .fetch();
+
+        JPAQuery<Post> countQuery = queryFactory
+                .selectFrom(post);
+        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+    }
+
     public Page<PostSearchDto> searchKeyPost(ImportantKeyType importantKeyType, Pageable pageable) {
         List<PostSearchDto> content = queryFactory
                 .select(new QPostSearchDto(
