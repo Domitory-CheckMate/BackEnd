@@ -8,6 +8,7 @@ import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDt
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
+import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.utils.EnumValueUtils;
@@ -18,10 +19,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.gachon.checkmate.global.error.ErrorCode.CHECK_LIST_NOT_FOUND;
+import static org.gachon.checkmate.global.utils.EnumValueUtils.toEntityCode;
+import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 
 
 @RequiredArgsConstructor
@@ -31,12 +37,16 @@ public class PostService {
     private final CheckListRepository checkListRepository;
     private final PostQuerydslRepository postQuerydslRepository;
 
-    public PostSearchResponseDto searchKeyWordPost(Long userId, String key, Pageable pageable) {
+    public PostSearchResponseDto searchKeyWordPost(Long userId, String key, String type, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        ImportantKeyType importantKeyType = EnumValueUtils.toEntityCode(ImportantKeyType.class, key);
+        SortType sortType = toEntityCode(SortType.class, type);
+        ImportantKeyType importantKeyType = toEntityCode(ImportantKeyType.class, key);
         Page<PostSearchDto> postSearchList = getKeySearchResults(importantKeyType, pageable);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
-        return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
+        sortByTypeForSearchResults(searchResults, Objects.requireNonNull(sortType));
+        List<PostSearchElementResponseDto> pagingSearchResults
+                = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
+        return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
     public PostSearchResponseDto searchTextPost(Long userId, String text, Pageable pageable) {
@@ -54,6 +64,21 @@ public class PostService {
                                 getRemainDate(postSearchDto.endDate()),
                                 getAccuracy(postSearchDto.postCheckList(), checkList)))
                 .collect(Collectors.toList());
+    }
+
+    private void sortByTypeForSearchResults(List<PostSearchElementResponseDto> posts, SortType sortType) {
+        if (sortType.equals(SortType.ACCURACY))
+            sortByAccuracyType(posts);
+        else if (sortType.equals(SortType.REMAIN_DATE))
+            sortByRemainDate(posts);
+    }
+
+    private void sortByAccuracyType(List<PostSearchElementResponseDto> posts) {
+        posts.sort(Comparator.comparingInt(PostSearchElementResponseDto::accuracy));
+    }
+
+    private void sortByRemainDate(List<PostSearchElementResponseDto> posts) {
+        posts.sort(Comparator.comparingInt(PostSearchElementResponseDto::remainDate));
     }
 
     private int getAccuracy(PostCheckList postCheckList, CheckList checkList) {
