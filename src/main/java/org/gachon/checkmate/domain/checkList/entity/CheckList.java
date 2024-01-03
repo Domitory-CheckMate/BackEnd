@@ -3,6 +3,7 @@ package org.gachon.checkmate.domain.checkList.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.checkList.converter.*;
+import org.gachon.checkmate.domain.checkList.dto.request.CreateCheckListRequestDto;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
@@ -31,4 +32,18 @@ public class CheckList extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public static CheckList createCheckList(User user, CreateCheckListRequestDto createCheckListRequestDto){
+        CheckList checkList = CheckList.builder()
+                .cleanType(createCheckListRequestDto.cleanType())
+                .drinkType(createCheckListRequestDto.drinkType())
+                .homeType(createCheckListRequestDto.homeType())
+                .lifePatterType(createCheckListRequestDto.lifePatterType())
+                .noiseType(createCheckListRequestDto.noiseType())
+                .sleepType(createCheckListRequestDto.sleepType())
+                .user(user)
+                .build();
+        user.setCheckList(checkList);
+        return checkList;
+    }
 }
