@@ -23,11 +23,12 @@ public class PostController {
         return SuccessResponse.ok(responseDto);
     }
 
-    @GetMapping("/search/{key}")
+    @GetMapping("/{key}")
     public ResponseEntity<SuccessResponse<?>> searchKeyWordPost(@UserId final Long userId,
                                                                 @PathVariable final String key,
+                                                                @RequestParam final String type,
                                                                 final Pageable pageable) {
-        final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, pageable);
+        final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, type, pageable);
         return SuccessResponse.ok(responseDto);
     }
 }

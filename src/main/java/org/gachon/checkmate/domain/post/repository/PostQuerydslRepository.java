@@ -41,8 +41,6 @@ public class PostQuerydslRepository {
                         containKeyWordCondition(importantKeyType),
                         validatePostDate()
                 )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
