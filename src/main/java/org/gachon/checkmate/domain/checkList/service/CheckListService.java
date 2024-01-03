@@ -12,8 +12,7 @@ import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.gachon.checkmate.global.error.ErrorCode.DUPLICATE_CHECK_LIST;
-import static org.gachon.checkmate.global.error.ErrorCode.USER_NOT_FOUND;
+import static org.gachon.checkmate.global.error.ErrorCode.*;
 
 @RequiredArgsConstructor
 @Transactional
@@ -32,6 +31,7 @@ public class CheckListService {
 
     public void updateCheckList(Long userId, CheckListRequestDto checkListRequestDto) {
         User user = findByIdOrThrow(userId);
+        checkIfCheckListNotExists(user);
         CheckList checkList = user.getCheckList();
         checkList.updateCheckList(checkListRequestDto);
         checkListRepository.save(checkList);
@@ -57,6 +57,12 @@ public class CheckListService {
     public void checkIfCheckListExists(User user) {
         if (checkListRepository.existsByUser(user)) {
             throw new ConflictException(DUPLICATE_CHECK_LIST);
+        }
+    }
+
+    public void checkIfCheckListNotExists(User user) {
+        if (!checkListRepository.existsByUser(user)) {
+            throw new EntityNotFoundException(CHECK_LIST_NOT_FOUND);
         }
     }
 
