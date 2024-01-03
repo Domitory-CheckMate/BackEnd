@@ -49,6 +49,7 @@ public enum ErrorCode {
      */
     CONFLICT(HttpStatus.CONFLICT, "이미 존재하는 리소스입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
+    DUPLICATE_CHECK_LIST(HttpStatus.CONFLICT, "체크리스트가 이미 존재합니다."),
 
     /**
      * 500 Internal Server Error
