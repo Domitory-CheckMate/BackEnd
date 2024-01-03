@@ -7,12 +7,7 @@ import org.gachon.checkmate.global.common.SuccessResponse;
 import org.gachon.checkmate.global.config.auth.UserId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/post")
@@ -20,11 +15,28 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
+    @GetMapping
+    public ResponseEntity<SuccessResponse<?>> getAllPosts(@UserId final Long userId,
+                                                          @RequestParam final String type,
+                                                          final Pageable pageable){
+        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, type, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
+    @GetMapping("/{key}")
+    public ResponseEntity<SuccessResponse<?>> searchKeyWordPost(@UserId final Long userId,
+                                                                @PathVariable final String key,
+                                                                @RequestParam final String type,
+                                                                final Pageable pageable) {
+        final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, type, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
     @GetMapping("/search")
     public ResponseEntity<SuccessResponse<?>> searchTextPost(@UserId final Long userId,
                                                              @RequestParam final String text,
                                                              final Pageable pageable) {
-        final List<PostSearchResponseDto> responseDto = postService.searchTextPost(userId, text, pageable);
+        final PostSearchResponseDto responseDto = postService.searchTextPost(userId, text, pageable);
         return SuccessResponse.ok(responseDto);
     }
 }
