@@ -2,6 +2,7 @@ package org.gachon.checkmate.domain.checkList.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.checkList.dto.request.CheckListRequestDto;
+import org.gachon.checkmate.domain.checkList.dto.response.CheckListResponseDto;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
 import org.gachon.checkmate.domain.member.entity.User;
@@ -29,11 +30,23 @@ public class CheckListService {
         checkListRepository.save(checkList);
     }
 
-    public void updateCheckList(Long userId, CheckListRequestDto checkListRequestDto){
+    public void updateCheckList(Long userId, CheckListRequestDto checkListRequestDto) {
         User user = findByIdOrThrow(userId);
         CheckList checkList = user.getCheckList();
         checkList.updateCheckList(checkListRequestDto);
         checkListRepository.save(checkList);
+    }
+
+    @Transactional(readOnly = true)
+    public CheckListResponseDto getCheckList(Long userId) {
+        User user = findByIdOrThrow(userId);
+        CheckList checkList = user.getCheckList();
+        return CheckListResponseDto.of(checkList.getCleanType().getDesc(),
+                checkList.getDrinkType().getDesc(),
+                checkList.getHomeType().getDesc(),
+                checkList.getLifePatterType().getDesc(),
+                checkList.getNoiseType().getDesc(),
+                checkList.getSleepType().getDesc());
     }
 
     private User findByIdOrThrow(Long userId) {
