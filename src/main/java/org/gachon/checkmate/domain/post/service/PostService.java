@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
+import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
+import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
+import org.gachon.checkmate.global.utils.EnumValueUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,20 +31,28 @@ public class PostService {
     private final CheckListRepository checkListRepository;
     private final PostQuerydslRepository postQuerydslRepository;
 
-    public List<PostSearchResponseDto> searchTextPost(Long userId, String text, Pageable pageable) {
+    public PostSearchResponseDto searchKeyWordPost(Long userId, String key, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        Page<PostSearchDto> postSearchDtoList = getPostSearchDto(text, pageable);
-        return createPostSearchResponseDto(postSearchDtoList, checkList);
+        ImportantKeyType importantKeyType = EnumValueUtils.toEntityCode(ImportantKeyType.class, key);
+        Page<PostSearchDto> postSearchList = getKeySearchResults(importantKeyType, pageable);
+        List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
+        return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
-    private List<PostSearchResponseDto> createPostSearchResponseDto(Page<PostSearchDto> postSearchDtoList, CheckList checkList) {
+    public PostSearchResponseDto searchTextPost(Long userId, String text, Pageable pageable) {
+        CheckList checkList = getCheckList(userId);
+        Page<PostSearchDto> postSearchList = getTextSearchResults(text, pageable);
+        List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
+        return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
+    }
+
+    private List<PostSearchElementResponseDto> createPostSearchResponseDto(Page<PostSearchDto> postSearchDtoList, CheckList checkList) {
         return postSearchDtoList.stream()
                 .map(postSearchDto ->
-                        PostSearchResponseDto.of(
+                        PostSearchElementResponseDto.of(
                                 postSearchDto,
                                 getRemainDate(postSearchDto.endDate()),
-                                getAccuracy(postSearchDto.postCheckList(), checkList)
-                        ))
+                                getAccuracy(postSearchDto.postCheckList(), checkList)))
                 .collect(Collectors.toList());
     }
 
@@ -64,7 +75,11 @@ public class PostService {
         return (int) endDate.until(LocalDate.now(), ChronoUnit.DAYS);
     }
 
-    private Page<PostSearchDto> getPostSearchDto(String text, Pageable pageable) {
+    private Page<PostSearchDto> getKeySearchResults(ImportantKeyType importantKeyType, Pageable pageable) {
+        return postQuerydslRepository.searchKeyPost(importantKeyType, pageable);
+    }
+
+    private Page<PostSearchDto> getTextSearchResults(String text, Pageable pageable) {
         return postQuerydslRepository.searchTextPost(text, pageable);
     }
 
