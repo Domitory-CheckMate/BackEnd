@@ -1,7 +1,7 @@
 package org.gachon.checkmate.domain.checkList.service;
 
 import lombok.RequiredArgsConstructor;
-import org.gachon.checkmate.domain.checkList.dto.request.CreateCheckListRequestDto;
+import org.gachon.checkmate.domain.checkList.dto.request.CheckListRequestDto;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
 import org.gachon.checkmate.domain.member.entity.User;
@@ -22,10 +22,17 @@ public class CheckListService {
     private final CheckListRepository checkListRepository;
     private final UserRepository userRepository;
 
-    public void createCheckList(Long userId, CreateCheckListRequestDto createCheckListRequestDto) {
+    public void createCheckList(Long userId, CheckListRequestDto checkListRequestDto) {
         User user = findByIdOrThrow(userId);
         checkIfCheckListExists(user);
-        CheckList checkList = CheckList.createCheckList(user, createCheckListRequestDto);
+        CheckList checkList = CheckList.createCheckList(user, checkListRequestDto);
+        checkListRepository.save(checkList);
+    }
+
+    public void updateCheckList(Long userId, CheckListRequestDto checkListRequestDto){
+        User user = findByIdOrThrow(userId);
+        CheckList checkList = user.getCheckList();
+        checkList.updateCheckList(checkListRequestDto);
         checkListRepository.save(checkList);
     }
 
