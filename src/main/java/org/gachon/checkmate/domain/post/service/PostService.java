@@ -1,11 +1,14 @@
 package org.gachon.checkmate.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
+import org.gachon.checkmate.domain.checkList.dto.response.CheckListResponseDto;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
+import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
+import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.SortType;
@@ -24,6 +27,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.gachon.checkmate.global.error.ErrorCode.CHECK_LIST_NOT_FOUND;
+import static org.gachon.checkmate.global.error.ErrorCode.POST_NOT_FOUND;
 import static org.gachon.checkmate.global.utils.EnumValueUtils.toEntityCode;
 import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 
@@ -44,6 +48,12 @@ public class PostService {
         List<PostSearchElementResponseDto> pagingSearchResults
                 = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
+    }
+
+    public PostDetailResponseDto getPostDetails(Long postId) {
+        PostDetailDto postDetailDto = getPostDetailDto(postId);
+        CheckListResponseDto checkListResponseDto = createCheckListResponseDto(postDetailDto.postCheckList());
+        return PostDetailResponseDto.of(postDetailDto, checkListResponseDto);
     }
 
     public PostSearchResponseDto searchKeyWordPost(Long userId, String key, String type, Pageable pageable) {
@@ -73,6 +83,17 @@ public class PostService {
                                 getRemainDate(postSearchDto.endDate()),
                                 getAccuracy(postSearchDto.postCheckList(), checkList)))
                 .collect(Collectors.toList());
+    }
+
+    private CheckListResponseDto createCheckListResponseDto(PostCheckList postCheckList) {
+        return CheckListResponseDto.of(
+                postCheckList.getCleanType().getDesc(),
+                postCheckList.getDrinkType().getDesc(),
+                postCheckList.getHomeType().getDesc(),
+                postCheckList.getLifePatterType().getDesc(),
+                postCheckList.getNoiseType().getDesc(),
+                postCheckList.getSleepType().getDesc()
+        );
     }
 
     private void sortByTypeForSearchResults(List<PostSearchElementResponseDto> posts, SortType sortType) {
@@ -124,5 +145,10 @@ public class PostService {
     private CheckList getCheckList(Long userId) {
         return checkListRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException(CHECK_LIST_NOT_FOUND));
+    }
+
+    private PostDetailDto getPostDetailDto(Long postId) {
+        return postQuerydslRepository.findPostDetail(postId)
+                .orElseThrow(() -> new EntityNotFoundException(POST_NOT_FOUND));
     }
 }
