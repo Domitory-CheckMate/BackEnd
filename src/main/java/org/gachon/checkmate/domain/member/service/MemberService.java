@@ -9,6 +9,7 @@ import org.gachon.checkmate.domain.member.dto.request.PasswordResetRequestDto;
 import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
+import org.gachon.checkmate.domain.member.dto.response.MypageResponseDto;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
 import org.gachon.checkmate.global.config.auth.jwt.JwtProvider;
@@ -57,6 +58,21 @@ public class MemberService {
     public void setPassword(PasswordResetRequestDto passwordResetRequestDto){
         User user = getUserFromEmail(passwordResetRequestDto.email());
         user.setPassword(encodedPassword(passwordResetRequestDto.newPassword()));
+    }
+
+    public MypageResponseDto getMypage(Long userId){
+        User user = findByIdOrThrow(userId);
+        return MypageResponseDto.of(user.getProfile(),
+                user.getName(),
+                user.getMajor(),
+                user.getGender().getDesc(),
+                user.getMbtiType().getDesc()
+        );
+    }
+
+    private User findByIdOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 
     private void validatePassword(String enteredPassword, String storedPassword) {
