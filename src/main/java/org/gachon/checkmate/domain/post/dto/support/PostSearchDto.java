@@ -8,6 +8,7 @@ import org.gachon.checkmate.domain.post.entity.SimilarityKeyType;
 import java.time.LocalDate;
 
 public record PostSearchDto(
+        Long postId,
         String title,
         String content,
         ImportantKeyType importantKey,
@@ -17,7 +18,8 @@ public record PostSearchDto(
         PostCheckList postCheckList
 ) {
     @QueryProjection
-    public PostSearchDto(String title, String content, ImportantKeyType importantKey, SimilarityKeyType similarityKey, LocalDate endDate, int scrapCount, PostCheckList postCheckList) {
+    public PostSearchDto(Long postId, String title, String content, ImportantKeyType importantKey, SimilarityKeyType similarityKey, LocalDate endDate, int scrapCount, PostCheckList postCheckList) {
+        this.postId = postId;
         this.title = title;
         this.content = content;
         this.importantKey = importantKey;
