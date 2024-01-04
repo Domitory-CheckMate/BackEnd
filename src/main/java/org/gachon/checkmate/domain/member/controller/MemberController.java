@@ -8,8 +8,10 @@ import org.gachon.checkmate.domain.member.dto.request.PasswordResetRequestDto;
 import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
 import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
+import org.gachon.checkmate.domain.member.dto.response.MypageResponseDto;
 import org.gachon.checkmate.domain.member.service.MemberService;
 import org.gachon.checkmate.global.common.SuccessResponse;
+import org.gachon.checkmate.global.config.auth.UserId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,5 +44,11 @@ public class MemberController {
     public ResponseEntity<SuccessResponse<?>> setPassword(@RequestBody final PasswordResetRequestDto passwordResetRequestDto){
         memberService.setPassword(passwordResetRequestDto);
         return SuccessResponse.ok(null);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<SuccessResponse<?>> getMypage(@UserId final Long userId){
+        final MypageResponseDto mypageResponseDto = memberService.getMypage(userId);
+        return SuccessResponse.ok(mypageResponseDto);
     }
 }
