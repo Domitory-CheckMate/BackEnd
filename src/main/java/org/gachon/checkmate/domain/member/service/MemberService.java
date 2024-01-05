@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gachon.checkmate.domain.member.dto.request.*;
 import org.gachon.checkmate.domain.member.dto.response.*;
+import org.gachon.checkmate.domain.member.entity.ProfileImageType;
 import org.gachon.checkmate.domain.member.entity.RefreshToken;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.RefreshTokenRepository;
@@ -17,6 +18,7 @@ import org.gachon.checkmate.global.error.exception.InvalidValueException;
 import org.gachon.checkmate.global.error.exception.UnauthorizedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.regex.Pattern;
+import java.util.Random;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,7 @@ public class MemberService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
+    private static final Random random = new Random();
 
     public EmailResponseDto sendMail(EmailPostRequestDto emailPostRequestDto) {
         checkDuplicateEmail(emailPostRequestDto.email());
@@ -107,6 +110,7 @@ public class MemberService {
     }
 
     private Long createMember(MemberSignUpRequestDto memberSignUpRequestDto) {
+        ProfileImageType randomProfile = getRandomProfileImage();
         User newUser = User.createUser(
                 memberSignUpRequestDto.email(),
                 encodedPassword(memberSignUpRequestDto.password()),
@@ -114,7 +118,8 @@ public class MemberService {
                 memberSignUpRequestDto.school(),
                 memberSignUpRequestDto.major(),
                 memberSignUpRequestDto.mbtiType(),
-                memberSignUpRequestDto.genderType()
+                memberSignUpRequestDto.genderType(),
+                randomProfile.getImageUrl()
         );
         return userRepository.save(newUser).getId();
     }
@@ -169,6 +174,12 @@ public class MemberService {
     public void signOut(Long userId) {
         User user = findByIdOrThrow(userId);
         deleteRefreshToken(user);
+    }
+
+    private static ProfileImageType getRandomProfileImage() {
+        ProfileImageType[] values = ProfileImageType.values();
+        int randomIndex = random.nextInt(values.length);
+        return values[randomIndex];
     }
 
 }
