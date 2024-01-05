@@ -25,7 +25,12 @@ public class SecurityConfig {
     private final CorsConfig corsConfig;
     private final JwtProvider jwtProvider;
 
-    private static final String[] whiteList = {"/", "api/member/email", "api/member/signup", "api/member/signin"};
+    private static final String[] whiteList = {"/",
+            "api/member/email",
+            "api/member/signup",
+            "api/member/signin",
+            "api/member/reissue"
+    };
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
