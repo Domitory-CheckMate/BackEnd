@@ -13,8 +13,10 @@ import org.gachon.checkmate.global.config.auth.jwt.JwtProvider;
 import org.gachon.checkmate.global.config.mail.MailProvider;
 import org.gachon.checkmate.global.error.exception.ConflictException;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
+import org.gachon.checkmate.global.error.exception.InvalidValueException;
 import org.gachon.checkmate.global.error.exception.UnauthorizedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private static final String PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$";
 
     public EmailResponseDto sendMail(EmailPostRequestDto emailPostRequestDto) {
         checkDuplicateEmail(emailPostRequestDto.email());
@@ -40,6 +43,7 @@ public class MemberService {
     }
 
     public MemberSignUpResponseDto signUp(MemberSignUpRequestDto memberSignUpRequestDto) {
+        validatePassword(memberSignUpRequestDto.password());
         Long newMemberId = createMember(memberSignUpRequestDto);
         String accessToken = issueNewAccessToken(newMemberId);
         String refreshToken = issueNewRefreshToken(newMemberId);
@@ -71,6 +75,12 @@ public class MemberService {
         );
     }
 
+    private void validatePassword(String password) {
+        if (!Pattern.matches(PASSWORD_REGEX, password)) {
+            throw new InvalidValueException(INVALID_PASSWORD);
+        }
+    }
+
     private User findByIdOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
@@ -78,7 +88,7 @@ public class MemberService {
 
     private void validatePassword(String enteredPassword, String storedPassword) {
         if (!authenticatePassword(enteredPassword, storedPassword)) {
-            throw new UnauthorizedException(INVALID_PASSWORD);
+            throw new UnauthorizedException(NOT_MATCH_PASSWORD);
         }
     }
 
