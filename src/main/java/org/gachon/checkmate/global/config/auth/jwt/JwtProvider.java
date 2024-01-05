@@ -1,5 +1,7 @@
 package org.gachon.checkmate.global.config.auth.jwt;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
@@ -8,9 +10,11 @@ import org.gachon.checkmate.global.error.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Map;
 
 @Getter
 @Component
@@ -21,6 +25,8 @@ public class JwtProvider {
     private long ACCESS_TOKEN_EXPIRE_TIME;
     @Value("${jwt.refresh-token-expire-time}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String getIssueToken(Long userId, boolean isAccessToken) {
         if (isAccessToken) return generateToken(userId, ACCESS_TOKEN_EXPIRE_TIME);
@@ -57,6 +63,13 @@ public class JwtProvider {
         return Long.valueOf(getJwtParser().parseClaimsJws(token)
                 .getBody()
                 .getSubject());
+    }
+
+    public String decodeJwtPayloadSubject(String oldAccessToken) throws JsonProcessingException {
+        return objectMapper.readValue(
+                new String(Base64.getDecoder().decode(oldAccessToken.split("\\.")[1]), StandardCharsets.UTF_8),
+                Map.class
+        ).get("sub").toString();
     }
 
     private String generateToken(Long userId, long tokenTime) {

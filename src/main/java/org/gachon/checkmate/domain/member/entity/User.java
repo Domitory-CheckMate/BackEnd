@@ -43,12 +43,12 @@ public class User extends BaseTimeEntity {
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
 
-    public static User createUser(String email, String storedPassword, String name, String school, String major, MbtiType mbti, GenderType gender){
+    public static User createUser(String email, String storedPassword, String name, String school, String major, MbtiType mbti, GenderType gender, String profile){
         return User.builder()
                 .email(email)
                 .password(storedPassword)
                 .name(name)
-                .profile(ProfileImageType.PROFILE_1.getImageUrl())
+                .profile(profile)
                 .school(school)
                 .major(major)
                 .mbtiType(mbti)
@@ -58,5 +58,13 @@ public class User extends BaseTimeEntity {
 
     public void setPassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void setCheckList(CheckList checkList) {
+        this.checkList = checkList;
+    }
+
+    public void setProfile(String profile){
+        this.profile = profile;
     }
 }

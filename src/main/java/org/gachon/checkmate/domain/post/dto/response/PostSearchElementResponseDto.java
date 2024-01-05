@@ -5,6 +5,7 @@ import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 
 @Builder
 public record PostSearchElementResponseDto(
+        Long postId,
         String title,
         String content,
         String importantKey,
@@ -17,6 +18,7 @@ public record PostSearchElementResponseDto(
                                                   int remainDate,
                                                   int accuracy) {
         return PostSearchElementResponseDto.builder()
+                .postId(postSearchDto.postId())
                 .title(postSearchDto.title())
                 .content(postSearchDto.content())
                 .importantKey(postSearchDto.importantKey().getDesc())
