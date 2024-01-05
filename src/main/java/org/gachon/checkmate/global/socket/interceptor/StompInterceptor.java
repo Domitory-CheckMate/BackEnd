@@ -1,12 +1,15 @@
 package org.gachon.checkmate.global.socket.interceptor;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gachon.checkmate.domain.chat.entity.LiveChatRoom;
+import org.gachon.checkmate.domain.chat.repository.LiveChatRoomRepository;
+import org.gachon.checkmate.domain.member.repository.UserRepository;
 import org.gachon.checkmate.global.socket.SocketJwtProvider;
-import org.gachon.checkmate.global.socket.error.SocketException;
-import org.gachon.checkmate.global.socket.error.SocketUnauthorizedException;
 import org.gachon.checkmate.global.socket.error.SocketErrorCode;
+import org.gachon.checkmate.global.socket.error.SocketException;
+import org.gachon.checkmate.global.socket.error.SocketNotFoundException;
+import org.gachon.checkmate.global.socket.error.SocketUnauthorizedException;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -14,12 +17,11 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
-import static org.gachon.checkmate.global.socket.error.SocketErrorCode.SESSION_ATTRIBUTE_NOT_FOUND;
-import static org.gachon.checkmate.global.socket.error.SocketErrorCode.SOCKET_SERVER_ERROR;
+import static org.gachon.checkmate.global.socket.error.SocketErrorCode.*;
 
 @Slf4j
 @Component
@@ -30,56 +32,69 @@ public class StompInterceptor implements ChannelInterceptor {
     private static final String BEARER = "Bearer ";
     public static final String DEFAULT_PATH = "/queue/chat/";
     private final SocketJwtProvider socketJwtProvider;
+    private final UserRepository userRepository;
+    private final LiveChatRoomRepository liveChatRoomRepository;
 
     // websocket을 통해 들어온 요청이 처리 되기전 실행된다.
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        Random random = new Random();
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
 
         if (StompCommand.CONNECT.equals(command)) { // websocket 연결요청 -> JWT 인증
+            // JWT 인증 부분
+            Long userId = getUserByAuthorizationHeader(
+                    accessor.getFirstNativeHeader("Authorization")
+            );
 
-            // JWT 인증 부분은 나중에 추가하도록 하겠습니다.
-//            User user = getUserByAuthorizationHeader(
-//                    accessor.getFirstNativeHeader("Authorization"));
-
-            // Exception 처리 테스트용
-            getUserByAuthorizationHeader(
-                    accessor.getFirstNativeHeader("Authorization"));
-            // 현재는 임의의 값으로 두었습니다.
-            Long userId = (long) random.nextInt(1000);
             setValue(accessor, "userId", userId);
             log.info("[CONNECT]:: userId : " + userId);
-//            setValue(accessor, "username", user.getNickname());
-//            setValue(accessor, "profileImgUrl", user.getProfileImgUrl());
 
+        } else if (StompCommand.SEND.equals(command)) {
+            // 매 요청마다 accessToken 검증
+            validateToken(accessor);
         } else if (StompCommand.SUBSCRIBE.equals(command)) { // 채팅방 구독요청(진입)
             Long userId = (Long)getValue(accessor, "userId");
-            log.debug("userId : " + userId);
             if(checkIsDestinationChatRoom(accessor)) {
-                Long roomId = parseRoomIdFromPath(accessor);
-                setValue(accessor, "roomId", roomId);
-                log.debug("roomId : " + roomId);
+                String enterRoomId = parseRoomIdFromPath(accessor);
+                setValue(accessor, "roomId", enterRoomId);
             }
+            log.debug("userId : " + userId);
         } else if (StompCommand.UNSUBSCRIBE.equals(command)) {
             Long userId = (Long)getValue(accessor, "userId");
+            if(checkIsDestinationChatRoom(accessor)) {
+                deleteLiveChatRoom(accessor);
+                deleteValue(accessor, "roomId");
+            }
             log.info("UNSUBSCRIBE userId : {}", userId);
         } else if (StompCommand.DISCONNECT == command) { // Websocket 연결 종료
             Long userId = (Long)getValue(accessor, "userId");
+            deleteLiveChatRoom(accessor);
             log.info("DISCONNECTED userId : {}", userId);
         }
         return message;
     }
 
-    private void getUserByAuthorizationHeader(String authHeaderValue) {
+    private Long getUserByAuthorizationHeader(String authHeaderValue) {
         String accessToken = getTokenByAuthorizationHeader(authHeaderValue);
+        Long userId = socketJwtProvider.getSubject(accessToken);
+        validateUserExist(userId);
+        return userId;
+    }
 
-        Claims claims = socketJwtProvider.getClaimsFormToken(accessToken);
-        Long userId = claims.get("userId", Long.class);
+    private void validateUserExist(Long userId) {
+        if(!userRepository.existsById(userId)) {
+            throw new SocketNotFoundException(USER_NOT_FOUND);
+        }
+    }
 
-//        return userRepository.findById(userId)
-//                .orElseThrow(() -> new UserNotFoundException(userId));
+    private void deleteLiveChatRoom(StompHeaderAccessor accessor) {
+        if(isChatRoomAttributeExist(accessor)) {
+            String roomId = (String) getValue(accessor, "roomId");
+            Long userId = (Long) getValue(accessor, "userId");
+            List<LiveChatRoom> liveChatRooms = liveChatRoomRepository.findAllByUserId(userId);
+            liveChatRoomRepository.deleteAll(liveChatRooms);
+        }
     }
 
     private String getTokenByAuthorizationHeader(String authHeaderValue) {
@@ -92,13 +107,27 @@ public class StompInterceptor implements ChannelInterceptor {
         return accessToken;
     }
 
-    private Boolean checkIsDestinationChatRoom(StompHeaderAccessor accessor) {
-        return accessor.getDestination().contains("/queue/chat/");
+    private void validateToken(StompHeaderAccessor accessor) {
+        String authHeaderValue = accessor.getFirstNativeHeader("Authorization");
+        if (Objects.isNull(authHeaderValue) || authHeaderValue.isBlank()) {
+            throw new SocketUnauthorizedException(SocketErrorCode.USER_NOT_AUTHORIZED);
+        }
+        String accessToken = SocketJwtProvider.extractToken(authHeaderValue);
+        socketJwtProvider.validateAccessToken(accessToken);
+        Long userId = socketJwtProvider.getSubject(accessToken);
+        Long originalUserId = (Long) getValue(accessor, "userId");
+        if(!originalUserId.equals(userId)) {
+            throw new SocketUnauthorizedException(SocketErrorCode.NOT_ORIGINAL_USER);
+        }
     }
 
-    private Long parseRoomIdFromPath(StompHeaderAccessor accessor) {
+    private Boolean checkIsDestinationChatRoom(StompHeaderAccessor accessor) {
+        return accessor.getDestination().contains(DEFAULT_PATH);
+    }
+
+    private String parseRoomIdFromPath(StompHeaderAccessor accessor) {
         String destination = accessor.getDestination();
-        return Long.parseLong(destination.substring(DEFAULT_PATH.length()));
+        return destination.substring(DEFAULT_PATH.length());
     }
 
     private Object getValue(StompHeaderAccessor accessor, String key) {
@@ -111,9 +140,20 @@ public class StompInterceptor implements ChannelInterceptor {
         return value;
     }
 
+    private Boolean isChatRoomAttributeExist(StompHeaderAccessor accessor) {
+        Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
+        Object value = sessionAttributes.get("roomId");
+        return !Objects.isNull(value);
+    }
+
     private void setValue(StompHeaderAccessor accessor, String key, Object value) {
         Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
         sessionAttributes.put(key, value);
+    }
+
+    private void deleteValue(StompHeaderAccessor accessor, String key) {
+        Map<String, Object> sessionAttributes = getSessionAttributes(accessor);
+        sessionAttributes.remove(key);
     }
 
     private Map<String, Object> getSessionAttributes(StompHeaderAccessor accessor) {
