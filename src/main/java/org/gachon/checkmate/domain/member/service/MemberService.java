@@ -1,16 +1,13 @@
 package org.gachon.checkmate.domain.member.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
-import org.gachon.checkmate.domain.member.dto.request.MemberSignInRequestDto;
-import org.gachon.checkmate.domain.member.dto.request.MemberSignUpRequestDto;
-import org.gachon.checkmate.domain.member.dto.request.PasswordResetRequestDto;
-import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
-import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
-import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
-import org.gachon.checkmate.domain.member.dto.response.MypageResponseDto;
+import org.gachon.checkmate.domain.member.dto.request.*;
+import org.gachon.checkmate.domain.member.dto.response.*;
+import org.gachon.checkmate.domain.member.entity.RefreshToken;
 import org.gachon.checkmate.domain.member.entity.User;
+import org.gachon.checkmate.domain.member.repository.RefreshTokenRepository;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
 import org.gachon.checkmate.global.config.auth.jwt.JwtProvider;
 import org.gachon.checkmate.global.config.mail.MailProvider;
@@ -21,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.gachon.checkmate.domain.member.entity.RefreshToken.createRefreshToken;
 import static org.gachon.checkmate.global.error.ErrorCode.*;
 
 @Slf4j
@@ -33,6 +31,7 @@ public class MemberService {
     private final MailProvider mailProvider;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public EmailResponseDto sendMail(EmailPostRequestDto emailPostRequestDto) {
         checkDuplicateEmail(emailPostRequestDto.email());
@@ -44,6 +43,7 @@ public class MemberService {
         Long newMemberId = createMember(memberSignUpRequestDto);
         String accessToken = issueNewAccessToken(newMemberId);
         String refreshToken = issueNewRefreshToken(newMemberId);
+        saveTokenInfo(newMemberId, refreshToken);
         return MemberSignUpResponseDto.of(newMemberId, memberSignUpRequestDto.name(), accessToken, refreshToken);
     }
 
@@ -52,15 +52,16 @@ public class MemberService {
         validatePassword(memberSignInRequestDto.password(), user.getPassword());
         String accessToken = issueNewAccessToken(user.getId());
         String refreshToken = issueNewRefreshToken(user.getId());
+        saveTokenInfo(user.getId(), refreshToken);
         return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
     }
 
-    public void setPassword(PasswordResetRequestDto passwordResetRequestDto){
+    public void setPassword(PasswordResetRequestDto passwordResetRequestDto) {
         User user = getUserFromEmail(passwordResetRequestDto.email());
         user.setPassword(encodedPassword(passwordResetRequestDto.newPassword()));
     }
 
-    public MypageResponseDto getMypage(Long userId){
+    public MypageResponseDto getMypage(Long userId) {
         User user = findByIdOrThrow(userId);
         return MypageResponseDto.of(user.getProfile(),
                 user.getName(),
@@ -121,5 +122,43 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 
+    public void saveTokenInfo(Long userId, String refreshToken) {
+        refreshTokenRepository.save(createRefreshToken(userId, refreshToken));
+    }
+
+    public MemberReissueTokenResponseDto reissue(MemberReissueTokenRequestDto memberReissueTokenRequestDto) throws JsonProcessingException {
+        Long userId = Long.valueOf(jwtProvider.decodeJwtPayloadSubject(memberReissueTokenRequestDto.accessToken()));
+        validateRefreshToken(memberReissueTokenRequestDto.refreshToken(), userId);
+        String accessToken = issueNewAccessToken(userId);
+        String refreshToken = issueNewRefreshToken(userId);
+        saveTokenInfo(userId, refreshToken);
+        return MemberReissueTokenResponseDto.of(accessToken, refreshToken);
+    }
+
+    private void validateRefreshToken(String refreshToken, Long userId) {
+        try {
+            jwtProvider.validateRefreshToken(refreshToken);
+            String storedRefreshToken = getRefreshTokenFromRedis(userId);
+            jwtProvider.equalsRefreshToken(refreshToken, storedRefreshToken);
+        } catch (UnauthorizedException e) {
+            signOut(userId);
+            throw e;
+        }
+    }
+
+    private String getRefreshTokenFromRedis(Long userId) {
+        RefreshToken storedRefreshToken = refreshTokenRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(REFRESH_TOKEN_NOT_FOUND));
+        return storedRefreshToken.getRefreshToken();
+    }
+
+    private void deleteRefreshToken(User user) {
+        refreshTokenRepository.deleteById(user.getId());
+    }
+
+    public void signOut(Long userId) {
+        User user = findByIdOrThrow(userId);
+        deleteRefreshToken(user);
+    }
 
 }
