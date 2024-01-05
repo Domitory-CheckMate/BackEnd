@@ -29,7 +29,9 @@ public class SecurityConfig {
             "api/member/email",
             "api/member/signup",
             "api/member/signin",
-            "api/member/reissue"
+            "api/member/reissue",
+            "/ws/*",
+            "/ws/**"
     };
 
     @Bean
