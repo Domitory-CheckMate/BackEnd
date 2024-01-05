@@ -4,11 +4,8 @@ package org.gachon.checkmate.global.socket;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-import org.gachon.checkmate.global.error.ErrorCode;
-import org.gachon.checkmate.global.error.exception.UnauthorizedException;
-import org.gachon.checkmate.global.socket.error.SocketException;
-import org.gachon.checkmate.global.socket.error.SocketUnauthorizedException;
 import org.gachon.checkmate.global.socket.error.SocketErrorCode;
+import org.gachon.checkmate.global.socket.error.SocketUnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -48,16 +45,6 @@ public class SocketJwtProvider {
             return authHeaderValue.substring(BEARER_TYPE.length()).trim();
         }
         return null;
-    }
-
-    public Claims getClaimsFormToken(String token) {
-        try {
-            Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes())
-                    .parseClaimsJws(token).getBody();
-            return claims;
-        } catch (Exception e){
-            throw new SocketException(SocketErrorCode.INVALID_ACCESS_TOKEN_VALUE);
-        }
     }
 
     public Long getSubject(String token) {
