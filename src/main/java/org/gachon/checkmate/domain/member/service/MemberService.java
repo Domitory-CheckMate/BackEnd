@@ -124,6 +124,17 @@ public class MemberService {
         return userRepository.save(newUser).getId();
     }
 
+    public void changeProfileImg(Long userId, ProfileImgRequestDto profileImgRequestDto){
+        User user = findByIdOrThrow(userId);
+        String imageUrl = switch (profileImgRequestDto.profileImageType()) {
+            case PROFILE_1 -> ProfileImageType.PROFILE_1.getImageUrl();
+            case PROFILE_2 -> ProfileImageType.PROFILE_2.getImageUrl();
+            case PROFILE_3 -> ProfileImageType.PROFILE_3.getImageUrl();
+        };
+        user.setProfile(imageUrl);
+        userRepository.save(user);
+    }
+
     private String encodedPassword(String rawPassword) {
         return passwordEncoder.encode(rawPassword);
     }

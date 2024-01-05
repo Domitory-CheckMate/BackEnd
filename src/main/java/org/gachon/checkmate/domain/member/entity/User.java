@@ -63,4 +63,8 @@ public class User extends BaseTimeEntity {
     public void setCheckList(CheckList checkList) {
         this.checkList = checkList;
     }
+
+    public void setProfile(String profile){
+        this.profile = profile;
+    }
 }
