@@ -58,4 +58,11 @@ public class MemberController {
         memberService.signOut(userId);
         return SuccessResponse.ok(null);
     }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<SuccessResponse<?>> changeProfileImg(@UserId final Long userId,
+                                                               @RequestBody ProfileImgRequestDto profileImgRequestDto){
+        memberService.changeProfileImg(userId, profileImgRequestDto);
+        return SuccessResponse.ok(null);
+    }
 }
