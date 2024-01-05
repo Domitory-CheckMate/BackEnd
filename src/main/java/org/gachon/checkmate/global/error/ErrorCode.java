@@ -14,6 +14,7 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     INVALID_ENUM_CODE(HttpStatus.BAD_REQUEST, "잘못된 Enum class code 입니다."),
     INVALID_PAGING_SIZE(HttpStatus.BAD_REQUEST, "잘못된 Paging 크기입니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8~20자 대소문자 영문, 숫자, 특수문자의 조합이어야 합니다."),
 
     /**
      * 401 Unauthorized
@@ -26,7 +27,7 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN_VALUE(HttpStatus.UNAUTHORIZED, "리프레시 토큰의 값이 올바르지 않습니다."),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다. 다시 로그인해 주세요."),
     NOT_MATCH_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "일치하지 않는 리프레시 토큰입니다."),
-    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
+    NOT_MATCH_PASSWORD(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
 
     /**
      * 403 Forbidden
@@ -40,6 +41,7 @@ public enum ErrorCode {
     CHECK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 유저를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 게시글을 찾을 수 없습니다."),
+    REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 리프레시 토큰을 찾을 수 없습니다. 다시 로그인해 주세요."),
 
     /**
      * 405 Method Not Allowed

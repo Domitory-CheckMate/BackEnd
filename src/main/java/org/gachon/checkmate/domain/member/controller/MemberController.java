@@ -1,15 +1,12 @@
 package org.gachon.checkmate.domain.member.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
-import org.gachon.checkmate.domain.member.dto.request.EmailPostRequestDto;
-import org.gachon.checkmate.domain.member.dto.request.MemberSignInRequestDto;
-import org.gachon.checkmate.domain.member.dto.request.MemberSignUpRequestDto;
-import org.gachon.checkmate.domain.member.dto.request.PasswordResetRequestDto;
-import org.gachon.checkmate.domain.member.dto.response.EmailResponseDto;
-import org.gachon.checkmate.domain.member.dto.response.MemberSignInResponseDto;
-import org.gachon.checkmate.domain.member.dto.response.MemberSignUpResponseDto;
+import org.gachon.checkmate.domain.member.dto.request.*;
+import org.gachon.checkmate.domain.member.dto.response.*;
 import org.gachon.checkmate.domain.member.service.MemberService;
 import org.gachon.checkmate.global.common.SuccessResponse;
+import org.gachon.checkmate.global.config.auth.UserId;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +38,31 @@ public class MemberController {
     @PatchMapping("/reset")
     public ResponseEntity<SuccessResponse<?>> setPassword(@RequestBody final PasswordResetRequestDto passwordResetRequestDto){
         memberService.setPassword(passwordResetRequestDto);
+        return SuccessResponse.ok(null);
+    }
+
+    @GetMapping("/mypage")
+    public ResponseEntity<SuccessResponse<?>> getMypage(@UserId final Long userId){
+        final MypageResponseDto mypageResponseDto = memberService.getMypage(userId);
+        return SuccessResponse.ok(mypageResponseDto);
+    }
+
+    @PostMapping("/reissue")
+    public ResponseEntity<SuccessResponse<?>> reissue(@RequestBody final MemberReissueTokenRequestDto memberReissueTokenRequestDto) throws JsonProcessingException {
+        final MemberReissueTokenResponseDto memberReissueTokenResponseDto = memberService.reissue(memberReissueTokenRequestDto);
+        return SuccessResponse.ok(memberReissueTokenResponseDto);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<SuccessResponse<?>> signOut(@UserId final Long userId) {
+        memberService.signOut(userId);
+        return SuccessResponse.ok(null);
+    }
+
+    @PatchMapping("/profile")
+    public ResponseEntity<SuccessResponse<?>> changeProfileImg(@UserId final Long userId,
+                                                               @RequestBody ProfileImgRequestDto profileImgRequestDto){
+        memberService.changeProfileImg(userId, profileImgRequestDto);
         return SuccessResponse.ok(null);
     }
 }
