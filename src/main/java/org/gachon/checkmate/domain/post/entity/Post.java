@@ -3,10 +3,11 @@ package org.gachon.checkmate.domain.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
-import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.post.converter.ImportantKeyTypeConverter;
+import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.post.converter.SimilarityKeyTypeConverter;
+import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
@@ -41,4 +42,22 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
+
+    public static Post createPost(PostCreateRequestDto postCreateRequestDto, User user) {
+        Post post = Post.builder()
+                .title(postCreateRequestDto.title())
+                .content(postCreateRequestDto.content())
+                .endDate(postCreateRequestDto.endDate())
+                .roomType(postCreateRequestDto.roomType())
+                .importantKeyType(postCreateRequestDto.importantKey())
+                .similarityKeyType(postCreateRequestDto.similarityKey())
+                .user(user)
+                .build();
+        user.addPost(post);
+        return post;
+    }
+
+    public void setPostCheckList(PostCheckList postCheckList) {
+        this.postCheckList = postCheckList;
+    }
 }
