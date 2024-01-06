@@ -1,19 +1,27 @@
 package org.gachon.checkmate.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
+import org.gachon.checkmate.domain.checkList.dto.request.CheckListRequestDto;
 import org.gachon.checkmate.domain.checkList.dto.response.CheckListResponseDto;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
+import org.gachon.checkmate.domain.checkList.repository.PostCheckListRepository;
+import org.gachon.checkmate.domain.member.entity.User;
+import org.gachon.checkmate.domain.member.repository.UserRepository;
+import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
 import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
 import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
+import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
+import org.gachon.checkmate.domain.post.repository.PostRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
+import org.gachon.checkmate.global.error.exception.InvalidValueException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,8 +34,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.gachon.checkmate.global.error.ErrorCode.CHECK_LIST_NOT_FOUND;
-import static org.gachon.checkmate.global.error.ErrorCode.POST_NOT_FOUND;
+import static org.gachon.checkmate.global.error.ErrorCode.*;
 import static org.gachon.checkmate.global.utils.EnumValueUtils.toEntityCode;
 import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 
@@ -36,8 +43,18 @@ import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 @Transactional
 @Service
 public class PostService {
+    private final UserRepository userRepository;
     private final CheckListRepository checkListRepository;
+    private final PostRepository postRepository;
     private final PostQuerydslRepository postQuerydslRepository;
+    private final PostCheckListRepository postCheckListRepository;
+
+    public void createPost(Long userId, PostCreateRequestDto requestDto) {
+        validateDuplicateTitle(requestDto.title());
+        User user = getUserOrThrow(userId);
+        Post post = createPostAndSave(requestDto, user);
+        PostCheckList postCheckList = createPostCheckListAndSave(requestDto.checkList(), post);
+    }
 
     public PostSearchResponseDto getAllPosts(Long userId, String type, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
@@ -130,6 +147,23 @@ public class PostService {
         return (int) endDate.until(LocalDate.now(), ChronoUnit.DAYS);
     }
 
+    private void validateDuplicateTitle(String title) {
+        if (postRepository.existsByTitle(title))
+            throw new InvalidValueException(INVALID_POST_TITLE);
+    }
+
+    private Post createPostAndSave(PostCreateRequestDto postCreateRequestDto, User user) {
+        Post post = Post.createPost(postCreateRequestDto, user);
+        postRepository.save(post);
+        return post;
+    }
+
+    private PostCheckList createPostCheckListAndSave(CheckListRequestDto checkListRequestDto, Post post) {
+        PostCheckList postCheckList = PostCheckList.createPostCheckList(checkListRequestDto, post);
+        postCheckListRepository.save(postCheckList);
+        return postCheckList;
+    }
+
     private Page<PostSearchDto> getAllPostsResults(Pageable pageable) {
         return postQuerydslRepository.findAllPosts(pageable);
     }
@@ -150,5 +184,10 @@ public class PostService {
     private PostDetailDto getPostDetailDto(Long postId) {
         return postQuerydslRepository.findPostDetail(postId)
                 .orElseThrow(() -> new EntityNotFoundException(POST_NOT_FOUND));
+    }
+
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
     }
 }
