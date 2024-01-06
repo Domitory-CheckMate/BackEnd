@@ -5,7 +5,6 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.member.converter.GenderTypeConverter;
 import org.gachon.checkmate.domain.member.converter.MbtiTypeConverter;
-import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
@@ -43,7 +42,7 @@ public class User extends BaseTimeEntity {
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
 
-    public static User createUser(String email, String storedPassword, String name, String school, String major, MbtiType mbti, GenderType gender, String profile){
+    public static User createUser(String email, String storedPassword, String name, String school, String major, MbtiType mbti, GenderType gender, String profile) {
         return User.builder()
                 .email(email)
                 .password(storedPassword)
@@ -64,7 +63,11 @@ public class User extends BaseTimeEntity {
         this.checkList = checkList;
     }
 
-    public void setProfile(String profile){
+    public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    public void addPost(Post post) {
+        this.postList.add(post);
     }
 }
