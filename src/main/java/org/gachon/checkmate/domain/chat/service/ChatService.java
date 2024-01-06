@@ -21,9 +21,9 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.gachon.checkmate.domain.chat.entity.ChatRoom.createChatRoom;
 import static org.gachon.checkmate.domain.chat.entity.LiveChatRoom.createLiveChatRoom;
@@ -71,11 +71,10 @@ public class ChatService {
     public ChatRoomListResponseDto getChatRoomList(Map<String, Object> simpSessionAttributes) {
         Long userId = getUserIdInAttributes(simpSessionAttributes);
         List<ChatRoom> chatRooms = getUserChatRoomsByUserId(userId);
-        List<ChatRoomListDto> response = new ArrayList<>(
-                chatRooms.stream()
+        List<ChatRoomListDto> response = chatRooms.stream()
                 .map(chatRoom -> getChatRoomListResponse(chatRoom, userId))
-                .toList()
-        );
+                .collect(Collectors.toList());
+
         // 최신 메시지순으로 정렬
         sortChatRoomListDtoByLastSendTime(response);
         return ChatRoomListResponseDto.of(response);
