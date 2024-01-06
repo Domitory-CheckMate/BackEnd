@@ -12,7 +12,8 @@ public record PostSearchElementResponseDto(
         String similarityKey,
         int scrapCount,
         int remainDate,
-        int accuracy
+        int accuracy,
+        String gender
 ) {
     public static PostSearchElementResponseDto of(PostSearchDto postSearchDto,
                                                   int remainDate,
@@ -26,6 +27,7 @@ public record PostSearchElementResponseDto(
                 .scrapCount(postSearchDto.scrapCount())
                 .remainDate(remainDate)
                 .accuracy(accuracy)
+                .gender(postSearchDto.genderType().getDesc())
                 .build();
     }
 }

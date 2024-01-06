@@ -5,11 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
 import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
+import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
+import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
 import org.gachon.checkmate.domain.post.service.PostService;
 import org.gachon.checkmate.global.common.SuccessResponse;
 import org.gachon.checkmate.global.config.auth.UserId;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -21,8 +24,9 @@ public class PostController {
     @GetMapping
     public ResponseEntity<SuccessResponse<?>> getAllPosts(@UserId final Long userId,
                                                           @RequestParam final String type,
+                                                          @RequestParam(required = false) final String gender,
                                                           final Pageable pageable) {
-        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, type, pageable);
+        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, type, gender, pageable);
         return SuccessResponse.ok(responseDto);
     }
 
@@ -44,14 +48,15 @@ public class PostController {
     public ResponseEntity<SuccessResponse<?>> searchKeyWordPost(@UserId final Long userId,
                                                                 @PathVariable final String key,
                                                                 @RequestParam final String type,
+                                                                @RequestParam(required = false) final String gender,
                                                                 final Pageable pageable) {
-        final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, type, pageable);
+        final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, type, gender, pageable);
         return SuccessResponse.ok(responseDto);
     }
 
     @PostMapping
     public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
-                                                         @Valid @RequestBody final PostCreateRequestDto requestDto) {
+                                                         @RequestBody @Valid final PostCreateRequestDto requestDto) {
         postService.createPost(userId, requestDto);
         return SuccessResponse.ok(null);
     }

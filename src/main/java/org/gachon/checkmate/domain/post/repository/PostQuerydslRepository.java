@@ -4,10 +4,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
-import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
-import org.gachon.checkmate.domain.post.dto.support.QPostDetailDto;
-import org.gachon.checkmate.domain.post.dto.support.QPostSearchDto;
+import org.gachon.checkmate.domain.member.entity.GenderType;
+import org.gachon.checkmate.domain.post.dto.support.*;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
@@ -22,6 +20,7 @@ import java.util.Optional;
 import static org.gachon.checkmate.domain.checkList.entity.QPostCheckList.postCheckList;
 import static org.gachon.checkmate.domain.member.entity.QUser.user;
 import static org.gachon.checkmate.domain.post.entity.QPost.post;
+import static org.springframework.util.StringUtils.hasText;
 
 @RequiredArgsConstructor
 @Repository
@@ -47,7 +46,7 @@ public class PostQuerydslRepository {
                 .fetchOne());
     }
 
-    public Page<PostSearchDto> findAllPosts(Pageable pageable) {
+    public Page<PostSearchDto> searchPosts(PostSearchCondition condition) {
         List<PostSearchDto> content = queryFactory
                 .select(new QPostSearchDto(
                         post.id,
@@ -57,43 +56,22 @@ public class PostQuerydslRepository {
                         post.similarityKeyType,
                         post.endDate,
                         post.scrapList.size(),
-                        postCheckList
+                        postCheckList,
+                        user.gender
                 ))
                 .from(post)
                 .leftJoin(post.postCheckList, postCheckList)
+                .leftJoin(post.user, user)
                 .where(
+                        eqImportantKey(condition.importantKeyType()),
+                        eqGenderType(condition.genderType()),
                         validatePostDate()
                 )
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
                 .selectFrom(post);
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
-    }
-
-    public Page<PostSearchDto> searchKeyPost(ImportantKeyType importantKeyType, Pageable pageable) {
-        List<PostSearchDto> content = queryFactory
-                .select(new QPostSearchDto(
-                        post.id,
-                        post.title,
-                        post.content,
-                        post.importantKeyType,
-                        post.similarityKeyType,
-                        post.endDate,
-                        post.scrapList.size(),
-                        postCheckList
-                ))
-                .from(post)
-                .leftJoin(post.postCheckList, postCheckList)
-                .where(
-                        containKeyWordCondition(importantKeyType),
-                        validatePostDate()
-                )
-                .fetch();
-
-        JPAQuery<Post> countQuery = queryFactory
-                .selectFrom(post);
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
     }
 
     public Page<PostSearchDto> searchTextPost(String text, Pageable pageable) {
@@ -106,10 +84,12 @@ public class PostQuerydslRepository {
                         post.similarityKeyType,
                         post.endDate,
                         post.scrapList.size(),
-                        postCheckList
+                        postCheckList,
+                        user.gender
                 ))
                 .from(post)
                 .leftJoin(post.postCheckList, postCheckList)
+                .leftJoin(post.user, user)
                 .where(
                         containTextCondition(text),
                         validatePostDate()
@@ -127,12 +107,16 @@ public class PostQuerydslRepository {
         return post.id.eq(postId);
     }
 
-    private BooleanExpression containKeyWordCondition(ImportantKeyType importantKeyType) {
-        return post.importantKeyType.eq(importantKeyType);
+    private BooleanExpression eqGenderType(GenderType genderType) {
+        return genderType != null ? user.gender.eq(genderType) : null;
+    }
+
+    private BooleanExpression eqImportantKey(ImportantKeyType importantKeyType) {
+        return importantKeyType != null ? post.importantKeyType.eq(importantKeyType) : null;
     }
 
     private BooleanExpression containTextCondition(String text) {
-        return post.title.contains(text);
+        return hasText(text) ? post.title.contains(text) : null;
     }
 
     private BooleanExpression validatePostDate() {
