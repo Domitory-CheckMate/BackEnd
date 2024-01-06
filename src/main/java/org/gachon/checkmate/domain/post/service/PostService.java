@@ -14,8 +14,8 @@ import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
 import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
+import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
-import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
@@ -31,11 +31,9 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.gachon.checkmate.global.error.ErrorCode.*;
-import static org.gachon.checkmate.global.utils.EnumValueUtils.toEntityCode;
 import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 
 
@@ -56,12 +54,12 @@ public class PostService {
         PostCheckList postCheckList = createPostCheckListAndSave(requestDto.checkList(), post);
     }
 
-    public PostSearchResponseDto getAllPosts(Long userId, String type, Pageable pageable) {
+    public PostSearchResponseDto getAllPosts(Long userId, String type, String gender, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        SortType sortType = toEntityCode(SortType.class, type);
-        Page<PostSearchDto> postSearchList = getAllPostsResults(pageable);
+        PostSearchCondition condition = PostSearchCondition.of(type, null, gender, pageable);
+        Page<PostSearchDto> postSearchList = getSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
-        sortByTypeForSearchResults(searchResults, Objects.requireNonNull(sortType));
+        sortByTypeForSearchResults(searchResults, condition.sortType());
         List<PostSearchElementResponseDto> pagingSearchResults
                 = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
@@ -73,13 +71,12 @@ public class PostService {
         return PostDetailResponseDto.of(postDetailDto, checkListResponseDto);
     }
 
-    public PostSearchResponseDto searchKeyWordPost(Long userId, String key, String type, Pageable pageable) {
+    public PostSearchResponseDto searchKeyWordPost(Long userId, String key, String type, String gender, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        SortType sortType = toEntityCode(SortType.class, type);
-        ImportantKeyType importantKeyType = toEntityCode(ImportantKeyType.class, key);
-        Page<PostSearchDto> postSearchList = getKeySearchResults(importantKeyType, pageable);
+        PostSearchCondition condition = PostSearchCondition.of(type, key, gender, pageable);
+        Page<PostSearchDto> postSearchList = getSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
-        sortByTypeForSearchResults(searchResults, Objects.requireNonNull(sortType));
+        sortByTypeForSearchResults(searchResults, condition.sortType());
         List<PostSearchElementResponseDto> pagingSearchResults
                 = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
@@ -164,12 +161,8 @@ public class PostService {
         return postCheckList;
     }
 
-    private Page<PostSearchDto> getAllPostsResults(Pageable pageable) {
-        return postQuerydslRepository.findAllPosts(pageable);
-    }
-
-    private Page<PostSearchDto> getKeySearchResults(ImportantKeyType importantKeyType, Pageable pageable) {
-        return postQuerydslRepository.searchKeyPost(importantKeyType, pageable);
+    private Page<PostSearchDto> getSearchResults(PostSearchCondition condition) {
+        return postQuerydslRepository.searchPosts(condition);
     }
 
     private Page<PostSearchDto> getTextSearchResults(String text, Pageable pageable) {
