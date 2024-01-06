@@ -57,14 +57,10 @@ public class ChatService {
         Chat savedChat = chatRepository.save(chat);
 
         // 만약 채팅방에 다른 유저가 안들어와있을 때 알림가도록 메세지 전송해줌
-        if(!isOtherUserInChatRoom) {
-            NewChatResponseDto notificationChat = NewChatResponseDto.of(savedChat);
-            sendingOperations.convertAndSend("/queue/user/" + otherUserId, SocketBaseResponse.of(MessageType.NEW_CHAT_NOTIFICATION, notificationChat));
-        }
+        sendNotificationToOtherUser(isOtherUserInChatRoom, savedChat, otherUserId);
 
         return ChatResponseDto.of(savedChat);
     }
-
 
     /**
      * 유저의 채팅방들을 불러오는 코드입니다.
@@ -133,6 +129,13 @@ public class ChatService {
             chatRoomRepository.save(chatRoom);
         }
         return ChatRoomEnterResponseDto.of(userId, chatRoomId);
+    }
+
+    private void sendNotificationToOtherUser(Boolean isOtherUserInChatRoom, Chat savedChat, Long otherUserId) {
+        if(!isOtherUserInChatRoom) {
+            NewChatResponseDto notificationChat = NewChatResponseDto.of(savedChat);
+            sendingOperations.convertAndSend("/queue/user/" + otherUserId, SocketBaseResponse.of(MessageType.NEW_CHAT_NOTIFICATION, notificationChat));
+        }
     }
 
     private void sortChatRoomListDtoByLastSendTime(List<ChatRoomListDto> chatRoomListDtos) {
