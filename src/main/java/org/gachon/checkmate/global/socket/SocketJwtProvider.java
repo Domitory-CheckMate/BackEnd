@@ -1,24 +1,21 @@
-package org.gachon.checkmate.global.config.auth.jwt;
+package org.gachon.checkmate.global.socket;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-import org.gachon.checkmate.global.error.ErrorCode;
-import org.gachon.checkmate.global.error.exception.UnauthorizedException;
+import org.gachon.checkmate.global.socket.error.SocketErrorCode;
+import org.gachon.checkmate.global.socket.error.SocketUnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Map;
 
 @Getter
 @Component
-public class JwtProvider {
+public class SocketJwtProvider {
     @Value("${jwt.secret}")
     private String secretKey;
     @Value("${jwt.access-token-expire-time}")
@@ -26,7 +23,7 @@ public class JwtProvider {
     @Value("${jwt.refresh-token-expire-time}")
     private long REFRESH_TOKEN_EXPIRE_TIME;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String BEARER_TYPE = "Bearer";
 
     public String getIssueToken(Long userId, boolean isAccessToken) {
         if (isAccessToken) return generateToken(userId, ACCESS_TOKEN_EXPIRE_TIME);
@@ -37,39 +34,23 @@ public class JwtProvider {
         try {
             getJwtParser().parseClaimsJws(accessToken);
         } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+            throw new SocketUnauthorizedException(SocketErrorCode.EXPIRED_ACCESS_TOKEN);
         } catch (Exception e) {
-            throw new UnauthorizedException(ErrorCode.INVALID_ACCESS_TOKEN_VALUE);
+            throw new SocketUnauthorizedException(SocketErrorCode.INVALID_ACCESS_TOKEN_VALUE);
         }
     }
 
-    public void validateRefreshToken(String refreshToken) {
-        try {
-            getJwtParser().parseClaimsJws(refreshToken);
-        } catch (ExpiredJwtException e) {
-            throw new UnauthorizedException(ErrorCode.EXPIRED_REFRESH_TOKEN);
-        } catch (Exception e) {
-            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN_VALUE);
+    public static String extractToken(String authHeaderValue) {
+        if (authHeaderValue.toLowerCase().startsWith(BEARER_TYPE.toLowerCase())) {
+            return authHeaderValue.substring(BEARER_TYPE.length()).trim();
         }
-    }
-
-    public void equalsRefreshToken(String providedRefreshToken, String storedRefreshToken) {
-        if (!providedRefreshToken.equals(storedRefreshToken)) {
-            throw new UnauthorizedException(ErrorCode.NOT_MATCH_REFRESH_TOKEN);
-        }
+        return null;
     }
 
     public Long getSubject(String token) {
         return Long.valueOf(getJwtParser().parseClaimsJws(token)
                 .getBody()
                 .getSubject());
-    }
-
-    public String decodeJwtPayloadSubject(String oldAccessToken) throws JsonProcessingException {
-        return objectMapper.readValue(
-                new String(Base64.getDecoder().decode(oldAccessToken.split("\\.")[1]), StandardCharsets.UTF_8),
-                Map.class
-        ).get("sub").toString();
     }
 
     private String generateToken(Long userId, long tokenTime) {
