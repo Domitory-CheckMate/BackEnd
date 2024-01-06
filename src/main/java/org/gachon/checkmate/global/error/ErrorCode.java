@@ -15,6 +15,7 @@ public enum ErrorCode {
     INVALID_ENUM_CODE(HttpStatus.BAD_REQUEST, "잘못된 Enum class code 입니다."),
     INVALID_PAGING_SIZE(HttpStatus.BAD_REQUEST, "잘못된 Paging 크기입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 8~20자 대소문자 영문, 숫자, 특수문자의 조합이어야 합니다."),
+    INVALID_POST_TITLE(HttpStatus.BAD_REQUEST, "이미 존재하는 게시물입니다."),
 
     /**
      * 401 Unauthorized
