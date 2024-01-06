@@ -1,6 +1,8 @@
 package org.gachon.checkmate.domain.post.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
 import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
 import org.gachon.checkmate.domain.post.service.PostService;
@@ -45,5 +47,12 @@ public class PostController {
                                                                 final Pageable pageable) {
         final PostSearchResponseDto responseDto = postService.searchKeyWordPost(userId, key, type, pageable);
         return SuccessResponse.ok(responseDto);
+    }
+
+    @PostMapping
+    public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
+                                                         @Valid @RequestBody final PostCreateRequestDto requestDto) {
+        postService.createPost(userId, requestDto);
+        return SuccessResponse.ok(null);
     }
 }
