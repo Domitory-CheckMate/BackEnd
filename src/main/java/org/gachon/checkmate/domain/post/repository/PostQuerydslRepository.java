@@ -42,7 +42,7 @@ public class PostQuerydslRepository {
                 .leftJoin(post.postCheckList, postCheckList)
                 .leftJoin(post.user, user)
                 .where(
-                        containPostId(postId)
+                        eqPostId(postId)
                 )
                 .fetchOne());
     }
@@ -123,7 +123,7 @@ public class PostQuerydslRepository {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
     }
 
-    private BooleanExpression containPostId(Long postId) {
+    private BooleanExpression eqPostId(Long postId) {
         return post.id.eq(postId);
     }
 
