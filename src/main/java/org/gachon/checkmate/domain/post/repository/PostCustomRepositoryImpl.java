@@ -11,7 +11,6 @@ import org.gachon.checkmate.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,10 +22,10 @@ import static org.gachon.checkmate.domain.post.entity.QPost.post;
 import static org.springframework.util.StringUtils.hasText;
 
 @RequiredArgsConstructor
-@Repository
-public class PostQuerydslRepository {
+public class PostCustomRepositoryImpl implements PostCustomRepository {
     private final JPAQueryFactory queryFactory;
 
+    @Override
     public Optional<PostDetailDto> findPostDetail(Long postId) {
         return Optional.ofNullable(queryFactory
                 .select(new QPostDetailDto(
@@ -46,6 +45,7 @@ public class PostQuerydslRepository {
                 .fetchOne());
     }
 
+    @Override
     public Page<PostSearchDto> searchPosts(PostSearchCondition condition) {
         List<PostSearchDto> content = queryFactory
                 .select(new QPostSearchDto(
@@ -74,6 +74,7 @@ public class PostQuerydslRepository {
         return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
     }
 
+    @Override
     public Page<PostSearchDto> searchTextPost(String text, Pageable pageable) {
         List<PostSearchDto> content = queryFactory
                 .select(new QPostSearchDto(
