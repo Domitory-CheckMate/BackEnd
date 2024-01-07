@@ -18,7 +18,6 @@ import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.entity.SortType;
-import org.gachon.checkmate.domain.post.repository.PostQuerydslRepository;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.error.exception.InvalidValueException;
@@ -44,19 +43,18 @@ public class PostService {
     private final UserRepository userRepository;
     private final CheckListRepository checkListRepository;
     private final PostRepository postRepository;
-    private final PostQuerydslRepository postQuerydslRepository;
     private final PostCheckListRepository postCheckListRepository;
 
     public void createPost(Long userId, PostCreateRequestDto requestDto) {
         validateDuplicateTitle(requestDto.title());
         User user = getUserOrThrow(userId);
         Post post = createPostAndSave(requestDto, user);
-        PostCheckList postCheckList = createPostCheckListAndSave(requestDto.checkList(), post);
+        createPostCheckListAndSave(requestDto.checkList(), post);
     }
 
-    public PostSearchResponseDto getAllPosts(Long userId, String type, String gender, Pageable pageable) {
+    public PostSearchResponseDto getAllPosts(Long userId, String key, String type, String gender, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        PostSearchCondition condition = PostSearchCondition.of(type, null, gender, pageable);
+        PostSearchCondition condition = PostSearchCondition.of(type, key, gender, pageable);
         Page<PostSearchDto> postSearchList = getSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
         sortByTypeForSearchResults(searchResults, condition.sortType());
@@ -69,17 +67,6 @@ public class PostService {
         PostDetailDto postDetailDto = getPostDetailDto(postId);
         CheckListResponseDto checkListResponseDto = createCheckListResponseDto(postDetailDto.postCheckList());
         return PostDetailResponseDto.of(postDetailDto, checkListResponseDto);
-    }
-
-    public PostSearchResponseDto searchKeyWordPost(Long userId, String key, String type, String gender, Pageable pageable) {
-        CheckList checkList = getCheckList(userId);
-        PostSearchCondition condition = PostSearchCondition.of(type, key, gender, pageable);
-        Page<PostSearchDto> postSearchList = getSearchResults(condition);
-        List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
-        sortByTypeForSearchResults(searchResults, condition.sortType());
-        List<PostSearchElementResponseDto> pagingSearchResults
-                = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
-        return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
     public PostSearchResponseDto searchTextPost(Long userId, String text, Pageable pageable) {
@@ -162,11 +149,11 @@ public class PostService {
     }
 
     private Page<PostSearchDto> getSearchResults(PostSearchCondition condition) {
-        return postQuerydslRepository.searchPosts(condition);
+        return postRepository.searchPosts(condition);
     }
 
     private Page<PostSearchDto> getTextSearchResults(String text, Pageable pageable) {
-        return postQuerydslRepository.searchTextPost(text, pageable);
+        return postRepository.searchTextPost(text, pageable);
     }
 
     private CheckList getCheckList(Long userId) {
@@ -175,7 +162,7 @@ public class PostService {
     }
 
     private PostDetailDto getPostDetailDto(Long postId) {
-        return postQuerydslRepository.findPostDetail(postId)
+        return postRepository.findPostDetail(postId)
                 .orElseThrow(() -> new EntityNotFoundException(POST_NOT_FOUND));
     }
 
