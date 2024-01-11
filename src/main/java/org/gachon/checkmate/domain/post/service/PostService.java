@@ -47,6 +47,7 @@ public class PostService {
 
     public void createPost(Long userId, PostCreateRequestDto requestDto) {
         validateDuplicateTitle(requestDto.title());
+        validateAvailableEndDate(requestDto.endDate());
         User user = getUserOrThrow(userId);
         Post post = createPostAndSave(requestDto, user);
         createPostCheckListAndSave(requestDto.checkList(), post);
@@ -128,12 +129,18 @@ public class PostService {
     }
 
     private int getRemainDate(LocalDate endDate) {
-        return (int) endDate.until(LocalDate.now(), ChronoUnit.DAYS);
+        return (int) LocalDate.now().until(endDate, ChronoUnit.DAYS);
     }
 
     private void validateDuplicateTitle(String title) {
         if (postRepository.existsByTitle(title))
             throw new InvalidValueException(INVALID_POST_TITLE);
+    }
+
+    private void validateAvailableEndDate(LocalDate endDate) {
+        LocalDate now = LocalDate.now();
+        if (endDate.isBefore(now))
+            throw new InvalidValueException(INVALID_POST_DATE);
     }
 
     private Post createPostAndSave(PostCreateRequestDto postCreateRequestDto, User user) {

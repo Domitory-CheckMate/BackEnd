@@ -14,7 +14,7 @@ public class PagingUtils {
         if (dataList.size() <= page * size)
             throw new InvalidValueException(INVALID_PAGING_SIZE);
         int startIndex = (int) page * size;
-        int endIndex = Math.min(dataList.size(), (int) page * (size + 1));
+        int endIndex = Math.min(dataList.size(), (int) (page + 1) * size);
         return dataList.subList(startIndex, endIndex);
     }
 }
