@@ -129,7 +129,7 @@ public class PostService {
     }
 
     private int getRemainDate(LocalDate endDate) {
-        return (int) endDate.until(LocalDate.now(), ChronoUnit.DAYS);
+        return (int) LocalDate.now().until(endDate, ChronoUnit.DAYS);
     }
 
     private void validateDuplicateTitle(String title) {
