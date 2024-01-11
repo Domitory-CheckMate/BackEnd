@@ -11,7 +11,8 @@ public enum MessageType {
     NEW_CHAT_NOTIFICATION("NEW_CHAT_NOTIFICATION"),
     ROOM_ENTER("ROOM_ENTER"),
     ROOM_LIST("ROOM_LIST"),
-    CHAT_LIST("CHAT_LIST");
+    CHAT_LIST("CHAT_LIST"),
+    NOT_READ_COUNT("NOT_READ_COUNT");
 
     private final String desc;
 }
