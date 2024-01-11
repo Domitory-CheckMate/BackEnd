@@ -42,6 +42,13 @@ public class PostController {
         return SuccessResponse.ok(responseDto);
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<SuccessResponse<?>> getMyPosts(@UserId final Long userId,
+                                                         final Pageable pageable) {
+        final PostSearchResponseDto responseDto = postService.getMyPosts(userId, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
     @PostMapping
     public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
                                                          @RequestBody @Valid final PostCreateRequestDto requestDto) {
