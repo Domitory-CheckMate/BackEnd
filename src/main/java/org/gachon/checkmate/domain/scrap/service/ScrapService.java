@@ -51,8 +51,8 @@ public class ScrapService {
         createScrapAndSave(user, post);
     }
 
-    public void deleteScrapPost(Long scrapId) {
-        scrapRepository.deleteById(scrapId);
+    public void deleteScrapPost(Long userId, Long scrapId) {
+        scrapRepository.deleteByIdAndUserId(scrapId, userId);
     }
 
     private List<PostSearchElementResponseDto> createPostSearchResponseDto(Page<PostSearchDto> postSearchDtoList, CheckList checkList) {

@@ -31,8 +31,9 @@ public class ScrapController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<SuccessResponse<?>> deleteScrapPost(@PathVariable("id") final Long scrapId) {
-        scrapService.deleteScrapPost(scrapId);
+    public ResponseEntity<SuccessResponse<?>> deleteScrapPost(@UserId final Long userId,
+                                                              @PathVariable("id") final Long scrapId) {
+        scrapService.deleteScrapPost(userId, scrapId);
         return SuccessResponse.ok(null);
     }
 }
