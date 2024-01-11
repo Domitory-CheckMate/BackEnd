@@ -9,7 +9,6 @@ import org.gachon.checkmate.domain.post.dto.support.*;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
 import java.time.LocalDate;
@@ -75,7 +74,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     @Override
-    public Page<PostSearchDto> searchTextPost(String text, Pageable pageable) {
+    public Page<PostSearchDto> searchPostsWithPaging(PostPagingSearchCondition condition) {
         List<PostSearchDto> content = queryFactory
                 .select(new QPostSearchDto(
                         post.id,
@@ -92,16 +91,21 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .leftJoin(post.postCheckList, postCheckList)
                 .leftJoin(post.user, user)
                 .where(
-                        containTextCondition(text),
+                        containTextCondition(condition.text()),
+                        eqUserId(condition.selectedUser()),
                         validatePostDate()
                 )
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
+                .offset(condition.pageable().getOffset())
+                .limit(condition.pageable().getPageSize())
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
                 .selectFrom(post);
-        return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
+        return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
+    }
+
+    private BooleanExpression eqUserId(Long userId) {
+        return userId != null ? user.id.eq(userId) : null;
     }
 
     private BooleanExpression eqPostId(Long postId) {
