@@ -121,6 +121,6 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     private BooleanExpression validatePostDate() {
-        return post.endDate.before(LocalDate.now());
+        return post.endDate.after(LocalDate.now());
     }
 }
