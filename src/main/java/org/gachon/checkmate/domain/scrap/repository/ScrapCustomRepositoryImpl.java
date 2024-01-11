@@ -7,12 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.member.entity.UserState;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.dto.support.QPostSearchDto;
-import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.scrap.dto.support.ScrapSearchCondition;
+import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.springframework.data.domain.Page;
 import org.springframework.data.support.PageableExecutionUtils;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.gachon.checkmate.domain.checkList.entity.QPostCheckList.postCheckList;
@@ -44,15 +43,22 @@ public class ScrapCustomRepositoryImpl implements ScrapCustomRepository {
                 .leftJoin(scrap.user, user)
                 .where(
                         eqUserId(condition.userId()),
-                        validateUserState(),
-                        validatePostDate()
+                        validateUserState()
                 )
                 .offset(condition.pageable().getOffset())
                 .limit(condition.pageable().getPageSize())
                 .fetch();
 
-        JPAQuery<Post> countQuery = queryFactory
-                .selectFrom(post);
+        JPAQuery<Scrap> countQuery = queryFactory
+                .selectFrom(scrap)
+                .leftJoin(scrap.post, post)
+                .leftJoin(scrap.post.postCheckList, postCheckList)
+                .leftJoin(scrap.user, user)
+                .where(
+                        eqUserId(condition.userId()),
+                        validateUserState()
+                );
+
         return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
     }
 
@@ -64,7 +70,4 @@ public class ScrapCustomRepositoryImpl implements ScrapCustomRepository {
         return user.userState.eq(UserState.JOIN);
     }
 
-    private BooleanExpression validatePostDate() {
-        return post.endDate.after(LocalDate.now());
-    }
 }

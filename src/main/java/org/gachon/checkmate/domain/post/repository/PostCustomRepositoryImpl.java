@@ -12,7 +12,6 @@ import org.gachon.checkmate.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.support.PageableExecutionUtils;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,13 +64,19 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         eqImportantKey(condition.importantKeyType()),
                         eqGenderType(condition.genderType()),
-                        validateUserState(),
-                        validatePostDate()
+                        validateUserState()
                 )
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
-                .selectFrom(post);
+                .selectFrom(post)
+                .leftJoin(post.postCheckList, postCheckList)
+                .leftJoin(post.user, user)
+                .where(
+                        eqImportantKey(condition.importantKeyType()),
+                        eqGenderType(condition.genderType()),
+                        validateUserState()
+                );
         return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
     }
 
@@ -95,15 +100,22 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         containTextCondition(condition.text()),
                         eqUserId(condition.selectedUser()),
-                        validateUserState(),
-                        condition.selectedUser() != null ? validatePostDate() : null
+                        validateUserState()
                 )
                 .offset(condition.pageable().getOffset())
                 .limit(condition.pageable().getPageSize())
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
-                .selectFrom(post);
+                .selectFrom(post)
+                .from(post)
+                .leftJoin(post.postCheckList, postCheckList)
+                .leftJoin(post.user, user)
+                .where(
+                        containTextCondition(condition.text()),
+                        eqUserId(condition.selectedUser()),
+                        validateUserState()
+                );
         return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
     }
 
@@ -129,9 +141,5 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     private BooleanExpression validateUserState() {
         return user.userState.eq(UserState.JOIN);
-    }
-
-    private BooleanExpression validatePostDate() {
-        return post.endDate.after(LocalDate.now());
     }
 }
