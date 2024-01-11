@@ -29,8 +29,9 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponse<?>> getPostDetails(@PathVariable("id") final Long postId) {
-        final PostDetailResponseDto responseDto = postService.getPostDetails(postId);
+    public ResponseEntity<SuccessResponse<?>> getPostDetails(@UserId final Long userId,
+                                                             @PathVariable("id") final Long postId) {
+        final PostDetailResponseDto responseDto = postService.getPostDetails(userId, postId);
         return SuccessResponse.ok(responseDto);
     }
 

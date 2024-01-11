@@ -20,6 +20,7 @@ import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
+import org.gachon.checkmate.domain.scrap.repository.ScrapRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.error.exception.InvalidValueException;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,7 @@ public class PostService {
     private final CheckListRepository checkListRepository;
     private final PostRepository postRepository;
     private final PostCheckListRepository postCheckListRepository;
+    private final ScrapRepository scrapRepository;
 
     public void createPost(Long userId, PostCreateRequestDto requestDto) {
         validateDuplicateTitle(requestDto.title());
@@ -73,10 +75,11 @@ public class PostService {
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
-    public PostDetailResponseDto getPostDetails(Long postId) {
+    public PostDetailResponseDto getPostDetails(Long userId, Long postId) {
         PostDetailDto postDetailDto = getPostDetailDto(postId);
         CheckListResponseDto checkListResponseDto = createCheckListResponseDto(postDetailDto.postCheckList());
-        return PostDetailResponseDto.of(postDetailDto, checkListResponseDto);
+        boolean isScrapPost = existPostInScrap(postId, userId);
+        return PostDetailResponseDto.of(postDetailDto, checkListResponseDto, isScrapPost);
     }
 
     public PostSearchResponseDto searchTextPost(Long userId, String text, Pageable pageable) {
@@ -185,5 +188,9 @@ public class PostService {
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+    }
+
+    private boolean existPostInScrap(Long postId, Long userId) {
+        return scrapRepository.existsByPostIdAndUserId(postId, userId);
     }
 }

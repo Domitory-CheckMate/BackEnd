@@ -11,15 +11,17 @@ public record PostDetailResponseDto(
         String profile,
         String gender,
         String mbti,
+        boolean isScrap,
         CheckListResponseDto checkList
 ) {
-    public static PostDetailResponseDto of(PostDetailDto postDetailDto, CheckListResponseDto checkList) {
+    public static PostDetailResponseDto of(PostDetailDto postDetailDto, CheckListResponseDto checkList, boolean isScrap) {
         return PostDetailResponseDto.builder()
                 .name(postDetailDto.name())
                 .major(postDetailDto.major())
                 .profile(postDetailDto.profile())
                 .gender(postDetailDto.gender().getDesc())
                 .mbti(postDetailDto.mbti().getDesc())
+                .isScrap(isScrap)
                 .checkList(checkList)
                 .build();
     }
