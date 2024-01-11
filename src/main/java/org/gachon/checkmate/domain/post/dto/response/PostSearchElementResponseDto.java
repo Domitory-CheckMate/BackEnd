@@ -13,7 +13,8 @@ public record PostSearchElementResponseDto(
         int scrapCount,
         int remainDate,
         int accuracy,
-        String gender
+        String gender,
+        String postState
 ) {
     public static PostSearchElementResponseDto of(PostSearchDto postSearchDto,
                                                   int remainDate,
@@ -28,6 +29,7 @@ public record PostSearchElementResponseDto(
                 .remainDate(remainDate)
                 .accuracy(accuracy)
                 .gender(postSearchDto.genderType().getDesc())
+                .postState(postSearchDto.postState().getDesc())
                 .build();
     }
 }

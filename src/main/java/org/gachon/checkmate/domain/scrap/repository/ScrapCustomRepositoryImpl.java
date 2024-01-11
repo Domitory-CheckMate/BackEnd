@@ -35,7 +35,8 @@ public class ScrapCustomRepositoryImpl implements ScrapCustomRepository {
                         post.endDate,
                         post.scrapList.size(),
                         postCheckList,
-                        user.gender
+                        user.gender,
+                        post.postState
                 ))
                 .from(scrap)
                 .leftJoin(scrap.post, post)

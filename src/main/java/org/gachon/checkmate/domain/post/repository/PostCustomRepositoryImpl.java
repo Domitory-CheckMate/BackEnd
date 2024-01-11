@@ -56,7 +56,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         post.endDate,
                         post.scrapList.size(),
                         postCheckList,
-                        user.gender
+                        user.gender,
+                        post.postState
                 ))
                 .from(post)
                 .leftJoin(post.postCheckList, postCheckList)
@@ -92,7 +93,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         post.endDate,
                         post.scrapList.size(),
                         postCheckList,
-                        user.gender
+                        user.gender,
+                        post.postState
                 ))
                 .from(post)
                 .leftJoin(post.postCheckList, postCheckList)
