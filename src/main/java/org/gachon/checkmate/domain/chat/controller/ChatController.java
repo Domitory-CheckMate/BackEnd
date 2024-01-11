@@ -48,8 +48,15 @@ public class ChatController {
     // 채팅방 입장하기
     @MessageMapping("/room-enter")
     public void enterRoom(@Header("simpSessionAttributes") Map<String, Object> simpSessionAttributes,
-                            @Payload final ChatListRequestDto request) {
+                          @Payload final ChatListRequestDto request) {
         ChatRoomEnterResponseDto response = chatService.enterChatRoom(simpSessionAttributes, request);
         sendingOperations.convertAndSend("/queue/chat/" + response.chatRoomId(), SocketBaseResponse.of(MessageType.ROOM_ENTER, response));
+    }
+
+    // 유저 총 안읽은 메세지
+    @MessageMapping("/not-read")
+    public void getNotReadChatCount(@Header("simpSessionAttributes") Map<String, Object> simpSessionAttributes) {
+        ChatTotalNotReadResponseDto response = chatService.getTotalNotReadCount(simpSessionAttributes);
+        sendingOperations.convertAndSend("/queue/user/" + simpSessionAttributes.get("userId"), SocketBaseResponse.of(MessageType.NOT_READ_COUNT, response));
     }
 }

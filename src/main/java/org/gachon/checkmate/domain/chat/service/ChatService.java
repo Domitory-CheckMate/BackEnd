@@ -110,7 +110,7 @@ public class ChatService {
      * 2. 이전에 유저가 읽지 않은 채팅을 모두 읽음처리 해줍니다.
      */
     public ChatRoomEnterResponseDto enterChatRoom(Map<String, Object> simpSessionAttributes,
-                              ChatListRequestDto request) {
+                                                  ChatListRequestDto request) {
         Long userId = getUserIdInAttributes(simpSessionAttributes);
         String chatRoomId = getChatRoomId(request.otherUserId(), userId);
 
@@ -128,6 +128,18 @@ public class ChatService {
             chatRoomRepository.save(chatRoom);
         }
         return ChatRoomEnterResponseDto.of(userId, chatRoomId);
+    }
+
+    /**
+     *  유저가 안읽은 메시지의 총 수를 받아옵니다.
+     */
+    public ChatTotalNotReadResponseDto getTotalNotReadCount(Map<String, Object> simpSessionAttributes) {
+        Long userId = getUserIdInAttributes(simpSessionAttributes);
+        List<ChatRoom> chatRooms = getUserChatRoomsByUserId(userId);
+
+        Long userTotalNotReadCount = getUserTotalNotReadCount(chatRooms, userId);
+
+        return ChatTotalNotReadResponseDto.of(userTotalNotReadCount);
     }
 
     private void sendNotificationToOtherUser(Boolean isOtherUserInChatRoom, Chat savedChat, Long otherUserId) {
@@ -161,6 +173,11 @@ public class ChatService {
 
     private Long getUserNotReadCount(ChatRoom chatRoom, Long userId) {
         return chatRepository.findUserNotReadCount(chatRoom.getId(), userId);
+    }
+
+
+    private Long getUserTotalNotReadCount(List<ChatRoom> chatRooms, Long userId) {
+        return chatRepository.findUserNotReadTotalCount(chatRooms.stream().map(ChatRoom::getId).toList(), userId);
     }
 
     private ChatLastMessageDto getLastChatRoomContent(ChatRoom chatRoom) {
