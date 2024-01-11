@@ -60,4 +60,8 @@ public class Post extends BaseTimeEntity {
     public void setPostCheckList(PostCheckList postCheckList) {
         this.postCheckList = postCheckList;
     }
+
+    public void addScrap(Scrap scrap) {
+        this.scrapList.add(scrap);
+    }
 }

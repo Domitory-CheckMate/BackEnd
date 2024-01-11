@@ -22,4 +22,14 @@ public class Scrap extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public static Scrap createScrap(User user, Post post) {
+        Scrap scrap = Scrap.builder()
+                .user(user)
+                .post(post)
+                .build();
+        user.addScrap(scrap);
+        post.addScrap(scrap);
+        return scrap;
+    }
 }
