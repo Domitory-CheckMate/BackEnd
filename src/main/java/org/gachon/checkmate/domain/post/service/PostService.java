@@ -14,11 +14,13 @@ import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
 import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
+import org.gachon.checkmate.domain.post.dto.support.PostPagingSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
+import org.gachon.checkmate.domain.scrap.repository.ScrapRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.error.exception.InvalidValueException;
 import org.springframework.data.domain.Page;
@@ -44,6 +46,7 @@ public class PostService {
     private final CheckListRepository checkListRepository;
     private final PostRepository postRepository;
     private final PostCheckListRepository postCheckListRepository;
+    private final ScrapRepository scrapRepository;
 
     public void createPost(Long userId, PostCreateRequestDto requestDto) {
         validateDuplicateTitle(requestDto.title());
@@ -51,6 +54,14 @@ public class PostService {
         User user = getUserOrThrow(userId);
         Post post = createPostAndSave(requestDto, user);
         createPostCheckListAndSave(requestDto.checkList(), post);
+    }
+
+    public PostSearchResponseDto getMyPosts(Long userId, Pageable pageable) {
+        CheckList checkList = getCheckList(userId);
+        PostPagingSearchCondition condition = PostPagingSearchCondition.searchSelectedUser(userId, pageable);
+        Page<PostSearchDto> postSearchList = getTextSearchResults(condition);
+        List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
+        return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
     public PostSearchResponseDto getAllPosts(Long userId, String key, String type, String gender, Pageable pageable) {
@@ -64,15 +75,17 @@ public class PostService {
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
-    public PostDetailResponseDto getPostDetails(Long postId) {
+    public PostDetailResponseDto getPostDetails(Long userId, Long postId) {
         PostDetailDto postDetailDto = getPostDetailDto(postId);
         CheckListResponseDto checkListResponseDto = createCheckListResponseDto(postDetailDto.postCheckList());
-        return PostDetailResponseDto.of(postDetailDto, checkListResponseDto);
+        boolean isScrapPost = existPostInScrap(postId, userId);
+        return PostDetailResponseDto.of(postDetailDto, checkListResponseDto, isScrapPost);
     }
 
     public PostSearchResponseDto searchTextPost(Long userId, String text, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        Page<PostSearchDto> postSearchList = getTextSearchResults(text, pageable);
+        PostPagingSearchCondition condition = PostPagingSearchCondition.searchText(text, pageable);
+        Page<PostSearchDto> postSearchList = getTextSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
         return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
@@ -149,18 +162,17 @@ public class PostService {
         return post;
     }
 
-    private PostCheckList createPostCheckListAndSave(CheckListRequestDto checkListRequestDto, Post post) {
+    private void createPostCheckListAndSave(CheckListRequestDto checkListRequestDto, Post post) {
         PostCheckList postCheckList = PostCheckList.createPostCheckList(checkListRequestDto, post);
         postCheckListRepository.save(postCheckList);
-        return postCheckList;
     }
 
     private Page<PostSearchDto> getSearchResults(PostSearchCondition condition) {
         return postRepository.searchPosts(condition);
     }
 
-    private Page<PostSearchDto> getTextSearchResults(String text, Pageable pageable) {
-        return postRepository.searchTextPost(text, pageable);
+    private Page<PostSearchDto> getTextSearchResults(PostPagingSearchCondition condition) {
+        return postRepository.searchPostsWithPaging(condition);
     }
 
     private CheckList getCheckList(Long userId) {
@@ -176,5 +188,9 @@ public class PostService {
     private User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND));
+    }
+
+    private boolean existPostInScrap(Long postId, Long userId) {
+        return scrapRepository.existsByPostIdAndUserId(postId, userId);
     }
 }

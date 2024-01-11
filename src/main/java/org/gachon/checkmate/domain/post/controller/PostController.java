@@ -29,8 +29,9 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SuccessResponse<?>> getPostDetails(@PathVariable("id") final Long postId) {
-        final PostDetailResponseDto responseDto = postService.getPostDetails(postId);
+    public ResponseEntity<SuccessResponse<?>> getPostDetails(@UserId final Long userId,
+                                                             @PathVariable("id") final Long postId) {
+        final PostDetailResponseDto responseDto = postService.getPostDetails(userId, postId);
         return SuccessResponse.ok(responseDto);
     }
 
@@ -42,10 +43,17 @@ public class PostController {
         return SuccessResponse.ok(responseDto);
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<SuccessResponse<?>> getMyPosts(@UserId final Long userId,
+                                                         final Pageable pageable) {
+        final PostSearchResponseDto responseDto = postService.getMyPosts(userId, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
     @PostMapping
     public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
                                                          @RequestBody @Valid final PostCreateRequestDto requestDto) {
         postService.createPost(userId, requestDto);
-        return SuccessResponse.ok(null);
+        return SuccessResponse.created(null);
     }
 }

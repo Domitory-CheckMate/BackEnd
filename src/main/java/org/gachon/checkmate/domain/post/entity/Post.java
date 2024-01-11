@@ -5,6 +5,7 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.post.converter.ImportantKeyTypeConverter;
+import org.gachon.checkmate.domain.post.converter.PostStateConverter;
 import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.post.converter.SimilarityKeyTypeConverter;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
@@ -28,6 +29,8 @@ public class Post extends BaseTimeEntity {
     private String title;
     private String content;
     private LocalDate endDate;
+    @Convert(converter = PostStateConverter.class)
+    private PostState postState;
     @Convert(converter = RoomTypeConverter.class)
     private RoomType roomType;
     @Convert(converter = ImportantKeyTypeConverter.class)
@@ -59,5 +62,9 @@ public class Post extends BaseTimeEntity {
 
     public void setPostCheckList(PostCheckList postCheckList) {
         this.postCheckList = postCheckList;
+    }
+
+    public void addScrap(Scrap scrap) {
+        this.scrapList.add(scrap);
     }
 }

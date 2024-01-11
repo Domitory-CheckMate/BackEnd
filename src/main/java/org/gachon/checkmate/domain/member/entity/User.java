@@ -5,6 +5,7 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.member.converter.GenderTypeConverter;
 import org.gachon.checkmate.domain.member.converter.MbtiTypeConverter;
+import org.gachon.checkmate.domain.member.converter.UserStateConverter;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
@@ -29,6 +30,8 @@ public class User extends BaseTimeEntity {
     private String profile;
     private String school;
     private String major;
+    @Convert(converter = UserStateConverter.class)
+    private UserState userState;
     @Convert(converter = MbtiTypeConverter.class)
     private MbtiType mbtiType;
     @Convert(converter = GenderTypeConverter.class)
@@ -69,5 +72,9 @@ public class User extends BaseTimeEntity {
 
     public void addPost(Post post) {
         this.postList.add(post);
+    }
+
+    public void addScrap(Scrap scrap) {
+        this.scrapList.add(scrap);
     }
 }
