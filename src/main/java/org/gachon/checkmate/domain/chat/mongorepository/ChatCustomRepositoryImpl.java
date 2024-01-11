@@ -82,6 +82,20 @@ public class ChatCustomRepositoryImpl implements ChatCustomRepository {
         return mongoTemplate.count(query, Chat.class);
     }
 
+    /**
+     * 채팅방에 유저가 읽지않은 메시지의 수를 가져오는 메소드
+     */
+    @Override
+    public Long findUserNotReadTotalCount(final List<String> chatRoomId, final Long userId) {
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("chatRoomId").in(chatRoomId)
+                .and("senderId").ne(userId)
+                .and("isRead").is(false));
+
+        return mongoTemplate.count(query, Chat.class);
+    }
+
     private boolean hasNextPage(List<Chat> chats, int pageSize) {
         if (chats.size() > pageSize) {
             chats.remove(pageSize);
