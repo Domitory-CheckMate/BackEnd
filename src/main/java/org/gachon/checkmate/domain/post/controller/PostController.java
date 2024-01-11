@@ -53,6 +53,6 @@ public class PostController {
     public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
                                                          @RequestBody @Valid final PostCreateRequestDto requestDto) {
         postService.createPost(userId, requestDto);
-        return SuccessResponse.ok(null);
+        return SuccessResponse.created(null);
     }
 }
