@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.member.entity.GenderType;
+import org.gachon.checkmate.domain.member.entity.UserState;
 import org.gachon.checkmate.domain.post.dto.support.*;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.Post;
@@ -64,6 +65,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         eqImportantKey(condition.importantKeyType()),
                         eqGenderType(condition.genderType()),
+                        validateUserState(),
                         validatePostDate()
                 )
                 .fetch();
@@ -93,6 +95,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         containTextCondition(condition.text()),
                         eqUserId(condition.selectedUser()),
+                        validateUserState(),
                         validatePostDate()
                 )
                 .offset(condition.pageable().getOffset())
@@ -122,6 +125,10 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     private BooleanExpression containTextCondition(String text) {
         return hasText(text) ? post.title.contains(text) : null;
+    }
+
+    private BooleanExpression validateUserState() {
+        return user.userState.eq(UserState.JOIN);
     }
 
     private BooleanExpression validatePostDate() {
