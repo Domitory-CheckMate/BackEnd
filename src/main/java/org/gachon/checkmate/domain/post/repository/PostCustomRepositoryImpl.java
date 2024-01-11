@@ -96,7 +96,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         containTextCondition(condition.text()),
                         eqUserId(condition.selectedUser()),
                         validateUserState(),
-                        validatePostDate()
+                        condition.selectedUser() != null ? validatePostDate() : null
                 )
                 .offset(condition.pageable().getOffset())
                 .limit(condition.pageable().getPageSize())
