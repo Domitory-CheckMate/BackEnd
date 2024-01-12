@@ -23,8 +23,8 @@ public class PostCheckList extends BaseTimeEntity {
     private DrinkType drinkType;
     @Convert(converter = HomeTypeConverter.class)
     private HomeType homeType;
-    @Convert(converter = LifePatterTypeConverter.class)
-    private LifePatterType lifePatterType;
+    @Convert(converter = LifePatternTypeConverter.class)
+    private LifePatternType lifePatternType;
     @Convert(converter = NoiseTypeConverter.class)
     private NoiseType noiseType;
     @Convert(converter = SleepTypeConverter.class)
@@ -38,7 +38,7 @@ public class PostCheckList extends BaseTimeEntity {
                 .cleanType(checkListRequestDto.cleanType())
                 .drinkType(checkListRequestDto.drinkType())
                 .homeType(checkListRequestDto.homeType())
-                .lifePatterType(checkListRequestDto.lifePatterType())
+                .lifePatternType(checkListRequestDto.lifePatternType())
                 .noiseType(checkListRequestDto.noiseType())
                 .sleepType(checkListRequestDto.sleepType())
                 .post(post)
@@ -51,7 +51,7 @@ public class PostCheckList extends BaseTimeEntity {
         this.cleanType = checkListRequestDto.cleanType();
         this.drinkType = checkListRequestDto.drinkType();
         this.homeType = checkListRequestDto.homeType();
-        this.lifePatterType = checkListRequestDto.lifePatterType();
+        this.lifePatternType = checkListRequestDto.lifePatternType();
         this.noiseType = checkListRequestDto.noiseType();
         this.sleepType = checkListRequestDto.sleepType();
     }

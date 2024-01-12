@@ -6,7 +6,7 @@ public record CheckListRequestDto(
         CleanType cleanType,
         DrinkType drinkType,
         HomeType homeType,
-        LifePatterType lifePatterType,
+        LifePatternType lifePatternType,
         NoiseType noiseType,
         SleepType sleepType
 

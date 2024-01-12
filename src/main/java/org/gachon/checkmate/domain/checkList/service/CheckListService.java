@@ -44,7 +44,7 @@ public class CheckListService {
         return CheckListResponseDto.of(checkList.getCleanType().getDesc(),
                 checkList.getDrinkType().getDesc(),
                 checkList.getHomeType().getDesc(),
-                checkList.getLifePatterType().getDesc(),
+                checkList.getLifePatternType().getDesc(),
                 checkList.getNoiseType().getDesc(),
                 checkList.getSleepType().getDesc());
     }
