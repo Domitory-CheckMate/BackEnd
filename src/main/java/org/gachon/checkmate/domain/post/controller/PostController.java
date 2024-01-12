@@ -62,6 +62,14 @@ public class PostController {
         return SuccessResponse.ok(responseDto);
     }
 
+    @PatchMapping("/state/{id}")
+    public ResponseEntity<SuccessResponse<?>> updatePostState(@UserId final Long userId,
+                                                              @PathVariable("id") final Long postId,
+                                                              @RequestBody @Valid final PostStateUpdateRequestDto requestDto) {
+        PostStateUpdateResponseDto responseDto = postService.updateMyPostState(userId, postId, requestDto);
+        return SuccessResponse.ok(responseDto);
+    }
+
     @PostMapping
     public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
                                                          @RequestBody @Valid final PostCreateRequestDto requestDto) {
