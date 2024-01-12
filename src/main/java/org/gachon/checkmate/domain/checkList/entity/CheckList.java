@@ -29,6 +29,8 @@ public class CheckList extends BaseTimeEntity {
     private NoiseType noiseType;
     @Convert(converter = SleepTypeConverter.class)
     private SleepType sleepType;
+    @Convert(converter = SmokeTypeConverter.class)
+    private SmokeType smokeType;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -41,6 +43,7 @@ public class CheckList extends BaseTimeEntity {
                 .lifePatternType(checkListRequestDto.lifePatternType())
                 .noiseType(checkListRequestDto.noiseType())
                 .sleepType(checkListRequestDto.sleepType())
+                .smokeType(checkListRequestDto.smokeType())
                 .user(user)
                 .build();
         user.setCheckList(checkList);
