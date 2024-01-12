@@ -46,7 +46,8 @@ public class CheckListService {
                 checkList.getHomeType().getDesc(),
                 checkList.getLifePatternType().getDesc(),
                 checkList.getNoiseType().getDesc(),
-                checkList.getSleepType().getDesc());
+                checkList.getSleepType().getDesc(),
+                checkList.getSmokeType().getDesc());
     }
 
     private User findByIdOrThrow(Long userId) {

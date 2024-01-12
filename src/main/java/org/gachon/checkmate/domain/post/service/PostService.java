@@ -132,7 +132,8 @@ public class PostService {
                 postCheckList.getHomeType().getDesc(),
                 postCheckList.getLifePatternType().getDesc(),
                 postCheckList.getNoiseType().getDesc(),
-                postCheckList.getSleepType().getDesc()
+                postCheckList.getSleepType().getDesc(),
+                postCheckList.getSmokeType().getDesc()
         );
     }
 
