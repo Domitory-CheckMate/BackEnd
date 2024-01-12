@@ -81,4 +81,7 @@ public class Post extends BaseTimeEntity {
         this.postCheckList.updatePostCheckList(postUpdateRequestDto.checkList());
     }
 
+    public void updatePostState(PostStateUpdateRequestDto postStateUpdateRequestDto) {
+        this.postState = postStateUpdateRequestDto.postState();
+    }
 }
