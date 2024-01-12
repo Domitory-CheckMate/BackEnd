@@ -101,6 +101,14 @@ public class PostService {
         return PostUpdateResponseDto.of(post, checkListResponseDto);
     }
 
+    public PostStateUpdateResponseDto updateMyPostState(Long userId, Long postId, PostStateUpdateRequestDto requestDto) {
+        User user = getUserOrThrow(userId);
+        Post post = getPostOrThrow(postId);
+        validatePostWriter(user, post);
+        post.updatePostState(requestDto);
+        return PostStateUpdateResponseDto.of(post);
+    }
+
     private void validatePostWriter(User user, Post post) {
         if(!post.getUser().getId().equals(user.getId())) {
             throw new ForbiddenException(NOT_POST_WRITER);
