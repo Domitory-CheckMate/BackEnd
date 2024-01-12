@@ -9,6 +9,8 @@ import org.gachon.checkmate.domain.post.converter.PostStateConverter;
 import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
 import org.gachon.checkmate.domain.post.converter.SimilarityKeyTypeConverter;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
@@ -51,6 +53,7 @@ public class Post extends BaseTimeEntity {
                 .title(postCreateRequestDto.title())
                 .content(postCreateRequestDto.content())
                 .endDate(postCreateRequestDto.endDate())
+                .postState(PostState.RECRUITING)
                 .roomType(postCreateRequestDto.roomType())
                 .importantKeyType(postCreateRequestDto.importantKey())
                 .similarityKeyType(postCreateRequestDto.similarityKey())
@@ -67,4 +70,15 @@ public class Post extends BaseTimeEntity {
     public void addScrap(Scrap scrap) {
         this.scrapList.add(scrap);
     }
+
+    public void updatePost(PostUpdateRequestDto postUpdateRequestDto) {
+        this.title = postUpdateRequestDto.title();
+        this.content = postUpdateRequestDto.content();
+        this.importantKeyType = postUpdateRequestDto.importantKey();
+        this.similarityKeyType = postUpdateRequestDto.similarityKey();
+        this.roomType = postUpdateRequestDto.roomType();
+        this.endDate = postUpdateRequestDto.endDate();
+        this.postCheckList.updatePostCheckList(postUpdateRequestDto.checkList());
+    }
+
 }

@@ -46,4 +46,13 @@ public class PostCheckList extends BaseTimeEntity {
         post.setPostCheckList(checkList);
         return checkList;
     }
+
+    public void updatePostCheckList(CheckListRequestDto checkListRequestDto) {
+        this.cleanType = checkListRequestDto.cleanType();
+        this.drinkType = checkListRequestDto.drinkType();
+        this.homeType = checkListRequestDto.homeType();
+        this.lifePatterType = checkListRequestDto.lifePatterType();
+        this.noiseType = checkListRequestDto.noiseType();
+        this.sleepType = checkListRequestDto.sleepType();
+    }
 }
