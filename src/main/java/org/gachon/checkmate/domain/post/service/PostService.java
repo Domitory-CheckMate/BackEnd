@@ -10,9 +10,9 @@ import org.gachon.checkmate.domain.checkList.repository.PostCheckListRepository;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
-import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
-import org.gachon.checkmate.domain.post.dto.response.PostSearchElementResponseDto;
-import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
+import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
+import org.gachon.checkmate.domain.post.dto.response.*;
 import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
 import org.gachon.checkmate.domain.post.dto.support.PostPagingSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
@@ -22,6 +22,7 @@ import org.gachon.checkmate.domain.post.entity.SortType;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
 import org.gachon.checkmate.domain.scrap.repository.ScrapRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
+import org.gachon.checkmate.global.error.exception.ForbiddenException;
 import org.gachon.checkmate.global.error.exception.InvalidValueException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -88,6 +89,30 @@ public class PostService {
         Page<PostSearchDto> postSearchList = getTextSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
         return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
+    }
+
+    public PostUpdateResponseDto updateMyPost(Long userId, Long postId, PostUpdateRequestDto requestDto) {
+        User user = getUserOrThrow(userId);
+        Post post = getPostOrThrow(postId);
+        validatePostWriter(user, post);
+        validateAvailableEndDate(requestDto.endDate());
+        post.updatePost(requestDto);
+        CheckListResponseDto checkListResponseDto = createCheckListResponseDto(post.getPostCheckList());
+        return PostUpdateResponseDto.of(post, checkListResponseDto);
+    }
+
+    public PostStateUpdateResponseDto updateMyPostState(Long userId, Long postId, PostStateUpdateRequestDto requestDto) {
+        User user = getUserOrThrow(userId);
+        Post post = getPostOrThrow(postId);
+        validatePostWriter(user, post);
+        post.updatePostState(requestDto);
+        return PostStateUpdateResponseDto.of(post);
+    }
+
+    private void validatePostWriter(User user, Post post) {
+        if(!post.getUser().getId().equals(user.getId())) {
+            throw new ForbiddenException(NOT_POST_WRITER);
+        }
     }
 
     private List<PostSearchElementResponseDto> createPostSearchResponseDto(Page<PostSearchDto> postSearchDtoList, CheckList checkList) {
@@ -192,5 +217,10 @@ public class PostService {
 
     private boolean existPostInScrap(Long postId, Long userId) {
         return scrapRepository.existsByPostIdAndUserId(postId, userId);
+    }
+
+    private Post getPostOrThrow(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException(POST_NOT_FOUND));
     }
 }
