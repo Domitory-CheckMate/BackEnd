@@ -36,6 +36,7 @@ public enum ErrorCode {
      */
     FORBIDDEN(HttpStatus.FORBIDDEN, "리소스 접근 권한이 없습니다."),
     NOT_POST_WRITER(HttpStatus.FORBIDDEN, "게시물을 수정할 권한이 없습니다. 작성자만이 게시물을 수정할 수 있습니다."),
+    NOT_CHATROOM_USER(HttpStatus.FORBIDDEN, "채팅방에 속한 유저가 아닙니다."),
 
     /**
      * 404 Not Found
@@ -44,6 +45,7 @@ public enum ErrorCode {
     CHECK_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "체크리스트를 찾을 수 없습니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 유저를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 게시글을 찾을 수 없습니다."),
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 채팅방을 찾을 수 없습니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 리프레시 토큰을 찾을 수 없습니다. 다시 로그인해 주세요."),
 
     /**
@@ -57,6 +59,8 @@ public enum ErrorCode {
     CONFLICT(HttpStatus.CONFLICT, "이미 존재하는 리소스입니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     DUPLICATE_CHECK_LIST(HttpStatus.CONFLICT, "체크리스트가 이미 존재합니다."),
+    DUPLICATE_POST_REPORT(HttpStatus.CONFLICT, "이전에 신고했던 게시물입니다."),
+    DUPLICATE_CHATROOM_REPORT(HttpStatus.CONFLICT, "이전에 신고했던 채팅방입니다."),
 
     /**
      * 500 Internal Server Error
