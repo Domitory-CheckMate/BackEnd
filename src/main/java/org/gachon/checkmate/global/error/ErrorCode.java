@@ -60,6 +60,7 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 가입된 이메일입니다."),
     DUPLICATE_CHECK_LIST(HttpStatus.CONFLICT, "체크리스트가 이미 존재합니다."),
     DUPLICATE_POST_REPORT(HttpStatus.CONFLICT, "이전에 신고했던 게시물입니다."),
+    DUPLICATE_CHATROOM_REPORT(HttpStatus.CONFLICT, "이전에 신고했던 채팅방입니다."),
 
     /**
      * 500 Internal Server Error
