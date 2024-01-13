@@ -36,7 +36,7 @@ public enum ErrorCode {
      */
     FORBIDDEN(HttpStatus.FORBIDDEN, "리소스 접근 권한이 없습니다."),
     NOT_POST_WRITER(HttpStatus.FORBIDDEN, "게시물을 수정할 권한이 없습니다. 작성자만이 게시물을 수정할 수 있습니다."),
-    NOT_CHATROOM_USER(HttpStatus.BAD_REQUEST, "채팅방에 속한 유저가 아닙니다."),
+    NOT_CHATROOM_USER(HttpStatus.FORBIDDEN, "채팅방에 속한 유저가 아닙니다."),
 
     /**
      * 404 Not Found
