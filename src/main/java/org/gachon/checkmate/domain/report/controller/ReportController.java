@@ -18,18 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/report")
 @RestController
 public class ReportController {
+
     private final ReportService reportService;
 
     @PostMapping("/post")
-    public ResponseEntity<SuccessResponse<?>> reportPost(@UserId Long userId,
-                                                         @RequestBody @Valid PostReportRequestDto requestDto) {
+    public ResponseEntity<SuccessResponse<?>> reportPost(@UserId final Long userId,
+                                                         @RequestBody @Valid final PostReportRequestDto requestDto) {
         reportService.reportPost(userId, requestDto);
         return SuccessResponse.created(null);
     }
 
     @PostMapping("/chat-room")
-    public ResponseEntity<SuccessResponse<?>> reportChatRoom(@UserId Long userId,
-                                                         @RequestBody @Valid ChatRoomReportRequestDto requestDto) {
+    public ResponseEntity<SuccessResponse<?>> reportChatRoom(@UserId final Long userId,
+                                                             @RequestBody @Valid final ChatRoomReportRequestDto requestDto) {
         reportService.reportChatRoom(userId, requestDto);
         return SuccessResponse.created(null);
     }
