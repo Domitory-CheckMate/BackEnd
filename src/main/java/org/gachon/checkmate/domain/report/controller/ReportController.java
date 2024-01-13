@@ -1,7 +1,9 @@
 package org.gachon.checkmate.domain.report.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.gachon.checkmate.domain.report.dto.request.ChatRoomReportRequestDto;
 import org.gachon.checkmate.domain.report.dto.request.PostReportRequestDto;
 import org.gachon.checkmate.domain.report.service.ReportService;
 import org.gachon.checkmate.global.common.SuccessResponse;
@@ -20,8 +22,15 @@ public class ReportController {
 
     @PostMapping("/post")
     public ResponseEntity<SuccessResponse<?>> reportPost(@UserId Long userId,
-                                                         @RequestBody PostReportRequestDto requestDto) {
+                                                         @RequestBody @Valid PostReportRequestDto requestDto) {
         reportService.reportPost(userId, requestDto);
+        return SuccessResponse.created(null);
+    }
+
+    @PostMapping("/chat-room")
+    public ResponseEntity<SuccessResponse<?>> reportChatRoom(@UserId Long userId,
+                                                         @RequestBody @Valid ChatRoomReportRequestDto requestDto) {
+        reportService.reportChatRoom(userId, requestDto);
         return SuccessResponse.created(null);
     }
 }
