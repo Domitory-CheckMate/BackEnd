@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import org.gachon.checkmate.domain.member.entity.GenderType;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
-import org.gachon.checkmate.domain.post.entity.SortType;
+import org.gachon.checkmate.domain.post.utils.PostSortType;
 import org.springframework.data.domain.Pageable;
 
 import static org.gachon.checkmate.global.utils.EnumValueUtils.toEntityCode;
@@ -14,7 +14,7 @@ import static org.gachon.checkmate.global.utils.EnumValueUtils.toEntityCode;
 public record PostSearchCondition(
         ImportantKeyType importantKeyType,
         GenderType genderType,
-        @NotNull SortType sortType,
+        @NotNull PostSortType postSortType,
         Pageable pageable
 
 ) {
@@ -22,7 +22,7 @@ public record PostSearchCondition(
         return PostSearchCondition.builder()
                 .importantKeyType(importantKeyType != null ? toEntityCode(ImportantKeyType.class, importantKeyType) : null)
                 .genderType(genderType != null ? toEntityCode(GenderType.class, genderType) : null)
-                .sortType(toEntityCode(SortType.class, sortType))
+                .postSortType(toEntityCode(PostSortType.class, sortType))
                 .pageable(pageable)
                 .build();
 

@@ -1,4 +1,4 @@
-package org.gachon.checkmate.domain.post.entity;
+package org.gachon.checkmate.domain.post.utils;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,7 @@ import org.gachon.checkmate.global.utils.EnumField;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public enum SortType implements EnumField {
+public enum PostSortType implements EnumField {
     DATE("1", "register"),
     REMAIN_DATE("2", "remain date"),
     ACCURACY("3", "accuracy");
