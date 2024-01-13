@@ -63,6 +63,12 @@ public class MemberService {
         return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
     }
 
+    public void withdraw(Long userId) {
+        User user = findByIdOrThrow(userId);
+        deleteRefreshToken(user);
+        user.withdrawUser();
+    }
+
     public void setPassword(PasswordResetRequestDto passwordResetRequestDto) {
         User user = getUserFromEmail(passwordResetRequestDto.email());
         user.setPassword(encodedPassword(passwordResetRequestDto.newPassword()));
