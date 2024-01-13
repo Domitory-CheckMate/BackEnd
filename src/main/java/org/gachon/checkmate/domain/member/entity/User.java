@@ -61,6 +61,19 @@ public class User extends BaseTimeEntity {
                 .build();
     }
 
+    public void withdrawUser() {
+        this.email = null;
+        this.password = null;
+        this.name = null;
+        this.profile = null;
+        this.school = null;
+        this.major = null;
+        this.userState = UserState.WITHDRAW;
+        this.mbtiType = null;
+        this.gender = null;
+        this.checkList = null;
+    }
+
     public void setPassword(String newPassword) {
         this.password = newPassword;
     }
