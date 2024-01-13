@@ -16,4 +16,8 @@ public enum SleepType implements EnumField {
 
     private final String code;
     private final String desc;
+
+    public int compareRateTo(SleepType e) {
+        return this.equals(e) ? 1 : 0;
+    }
 }

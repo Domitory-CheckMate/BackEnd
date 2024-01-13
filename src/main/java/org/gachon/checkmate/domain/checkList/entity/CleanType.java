@@ -16,4 +16,9 @@ public enum CleanType implements EnumField {
 
     private final String code;
     private final String desc;
+    private final int size = 5;
+
+    public int compareRateTo(CleanType e) {
+        return 1 - Math.abs(Integer.parseInt(this.getCode()) - Integer.parseInt(e.getCode())) / (this.size - 1);
+    }
 }

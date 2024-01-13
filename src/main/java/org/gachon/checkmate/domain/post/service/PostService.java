@@ -10,15 +10,15 @@ import org.gachon.checkmate.domain.checkList.repository.PostCheckListRepository;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
-import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
 import org.gachon.checkmate.domain.post.dto.response.*;
 import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
 import org.gachon.checkmate.domain.post.dto.support.PostPagingSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.Post;
-import org.gachon.checkmate.domain.post.entity.SortType;
+import org.gachon.checkmate.domain.post.entity.PostSortType;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
 import org.gachon.checkmate.domain.scrap.repository.ScrapRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
@@ -70,7 +70,7 @@ public class PostService {
         PostSearchCondition condition = PostSearchCondition.of(type, key, gender, pageable);
         Page<PostSearchDto> postSearchList = getSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
-        sortByTypeForSearchResults(searchResults, condition.sortType());
+        sortByTypeForSearchResults(searchResults, condition.postSortType());
         List<PostSearchElementResponseDto> pagingSearchResults
                 = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
@@ -78,7 +78,7 @@ public class PostService {
 
     public PostDetailResponseDto getPostDetails(Long userId, Long postId) {
         PostDetailDto postDetailDto = getPostDetailDto(postId);
-        CheckListResponseDto checkListResponseDto = createCheckListResponseDto(postDetailDto.postCheckList());
+        CheckListResponseDto checkListResponseDto = CheckListResponseDto.ofPostCheckList(postDetailDto.postCheckList());
         boolean isScrapPost = existPostInScrap(postId, userId);
         return PostDetailResponseDto.of(postDetailDto, checkListResponseDto, isScrapPost);
     }
@@ -97,7 +97,7 @@ public class PostService {
         validatePostWriter(user, post);
         validateAvailableEndDate(requestDto.endDate());
         post.updatePost(requestDto);
-        CheckListResponseDto checkListResponseDto = createCheckListResponseDto(post.getPostCheckList());
+        CheckListResponseDto checkListResponseDto = CheckListResponseDto.ofPostCheckList(post.getPostCheckList());
         return PostUpdateResponseDto.of(post, checkListResponseDto);
     }
 
@@ -110,7 +110,7 @@ public class PostService {
     }
 
     private void validatePostWriter(User user, Post post) {
-        if(!post.getUser().getId().equals(user.getId())) {
+        if (!post.getUser().getId().equals(user.getId())) {
             throw new ForbiddenException(NOT_POST_WRITER);
         }
     }
@@ -125,22 +125,10 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    private CheckListResponseDto createCheckListResponseDto(PostCheckList postCheckList) {
-        return CheckListResponseDto.of(
-                postCheckList.getCleanType().getDesc(),
-                postCheckList.getDrinkType().getDesc(),
-                postCheckList.getHomeType().getDesc(),
-                postCheckList.getLifePatternType().getDesc(),
-                postCheckList.getNoiseType().getDesc(),
-                postCheckList.getSleepType().getDesc(),
-                postCheckList.getSmokeType().getDesc()
-        );
-    }
-
-    private void sortByTypeForSearchResults(List<PostSearchElementResponseDto> posts, SortType sortType) {
-        if (sortType.equals(SortType.ACCURACY))
+    private void sortByTypeForSearchResults(List<PostSearchElementResponseDto> posts, PostSortType postSortType) {
+        if (postSortType.equals(PostSortType.ACCURACY))
             sortByAccuracyType(posts);
-        else if (sortType.equals(SortType.REMAIN_DATE))
+        else if (postSortType.equals(PostSortType.REMAIN_DATE))
             sortByRemainDate(posts);
     }
 
@@ -154,17 +142,14 @@ public class PostService {
 
     private int getAccuracy(PostCheckList postCheckList, CheckList checkList) {
         int count = 0;
-        count += getRateForFrequencyElement(postCheckList.getCleanType().getCode(), checkList.getCleanType().getCode(), 4);
-        count += getRateForFrequencyElement(postCheckList.getDrinkType().getCode(), checkList.getDrinkType().getCode(), 3);
-        count += getRateForFrequencyElement(postCheckList.getHomeType().getCode(), checkList.getHomeType().getCode(), 3);
-        count = postCheckList.getLifePatternType().equals(checkList.getLifePatternType()) ? count + 1 : count;
-        count = postCheckList.getNoiseType().equals(checkList.getNoiseType()) ? count + 1 : count;
-        count = postCheckList.getSleepType().equals(checkList.getSleepType()) ? count + 1 : count;
-        return (int) (count / 6) * 100;
-    }
-
-    private int getRateForFrequencyElement(String firstEnumCode, String secondEnumCode, int size) {
-        return 1 - Math.abs(Integer.parseInt(firstEnumCode) - Integer.parseInt(secondEnumCode)) / size;
+        count += postCheckList.getCleanType().compareRateTo(checkList.getCleanType());
+        count += postCheckList.getDrinkType().compareRateTo(checkList.getDrinkType());
+        count += postCheckList.getHomeType().compareRateTo(checkList.getHomeType());
+        count += postCheckList.getLifePatternType().compareRateTo(checkList.getLifePatternType());
+        count += postCheckList.getNoiseType().compareRateTo(checkList.getNoiseType());
+        count += postCheckList.getSleepType().compareRateTo(checkList.getSleepType());
+        count += postCheckList.getSmokeType().compareRateTo(checkList.getSmokeType());
+        return (int) (count / 7) * 100;
     }
 
     private int getRemainDate(LocalDate endDate) {

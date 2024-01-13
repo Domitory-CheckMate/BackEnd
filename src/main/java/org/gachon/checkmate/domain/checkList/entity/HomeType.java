@@ -13,6 +13,11 @@ public enum HomeType implements EnumField {
     OFTEN("3", "1~2주에 한번"),
     ALWAYS("4", "매주");
 
-    private String code;
-    private String desc;
+    private final String code;
+    private final String desc;
+    private final int size = 4;
+
+    public int compareRateTo(HomeType e) {
+        return 1 - Math.abs(Integer.parseInt(this.getCode()) - Integer.parseInt(e.getCode())) / (this.size - 1);
+    }
 }

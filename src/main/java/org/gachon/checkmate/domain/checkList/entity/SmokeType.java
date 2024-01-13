@@ -13,5 +13,9 @@ public enum SmokeType implements EnumField {
 
     private final String code;
     private final String desc;
+
+    public int compareRateTo(SmokeType e) {
+        return this.equals(e) ? 1 : 0;
+    }
 }
 
