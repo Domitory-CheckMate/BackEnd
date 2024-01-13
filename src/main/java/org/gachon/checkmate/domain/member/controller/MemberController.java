@@ -35,6 +35,12 @@ public class MemberController {
         return SuccessResponse.ok(memberSignInResponseDto);
     }
 
+    @PatchMapping("/withdraw")
+    public ResponseEntity<SuccessResponse<?>> withdraw(@UserId final Long userId) {
+        memberService.withdraw(userId);
+        return SuccessResponse.ok(null);
+    }
+
     @PatchMapping("/reset")
     public ResponseEntity<SuccessResponse<?>> setPassword(@RequestBody final PasswordResetRequestDto passwordResetRequestDto){
         memberService.setPassword(passwordResetRequestDto);

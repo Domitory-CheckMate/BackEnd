@@ -52,8 +52,8 @@ public class ReportService {
     }
 
     private void validateUserChatRoomMember(User user, ChatRoom chatRoom) {
-        if(!chatRoom.getFirstMemberId().equals(user.getId()) &&
-                !chatRoom.getSecondMemberId().equals(user.getId())) {
+        if(!chatRoom.getFirstUser().getId().equals(user.getId()) &&
+                !chatRoom.getSecondUser().getId().equals(user.getId())) {
             throw new ForbiddenException(NOT_CHATROOM_USER);
         }
     }

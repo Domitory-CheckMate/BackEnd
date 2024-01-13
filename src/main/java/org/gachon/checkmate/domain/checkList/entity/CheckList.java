@@ -57,5 +57,6 @@ public class CheckList extends BaseTimeEntity {
         this.lifePatternType = checkListRequestDto.lifePatternType();
         this.noiseType = checkListRequestDto.noiseType();
         this.sleepType = checkListRequestDto.sleepType();
+        this.smokeType = checkListRequestDto.smokeType();
     }
 }

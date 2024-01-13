@@ -1,10 +1,8 @@
 package org.gachon.checkmate.domain.chat.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,17 +24,19 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(name = "chat_room_id", length = 100)
     private String id;
 
-    @Column(name = "first_member_id")
-    private Long firstMemberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "first_member_id")
+    private User firstUser;
 
-    @Column(name = "second_member_id")
-    private Long secondMemberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "second_member_id")
+    private User secondUser;
 
-    public static ChatRoom createChatRoom(String id, Long firstMemberId, Long secondMemberId) {
+    public static ChatRoom createChatRoom(String id, User firstUser, User secondUser) {
         return ChatRoom.builder()
                 .id(id)
-                .firstMemberId(firstMemberId)
-                .secondMemberId(secondMemberId)
+                .firstUser(firstUser)
+                .secondUser(secondUser)
                 .build();
     }
 
