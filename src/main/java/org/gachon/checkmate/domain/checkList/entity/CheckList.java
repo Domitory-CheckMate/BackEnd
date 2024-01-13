@@ -27,22 +27,31 @@ public class CheckList extends BaseTimeEntity {
     private LifePatternType lifePatternType;
     @Convert(converter = NoiseTypeConverter.class)
     private NoiseType noiseType;
-    @Convert(converter = SleepTypeConverter.class)
-    private SleepType sleepType;
+    @Convert(converter = SleepGridingTypeConverter.class)
+    private SleepGridingType sleepGridingType;
+    @Convert(converter = SleepSnoreTypeConverter.class)
+    private SleepSnoreType sleepSnoreType;
+    @Convert(converter = SleepTalkingTypeConverter.class)
+    private SleepTalkingType sleepTalkingType;
+    @Convert(converter = SleepTurningTypeConverter.class)
+    private SleepTurningType sleepTurningType;
     @Convert(converter = SmokeTypeConverter.class)
     private SmokeType smokeType;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public static CheckList createCheckList(User user, CheckListRequestDto checkListRequestDto){
+    public static CheckList createCheckList(User user, CheckListRequestDto checkListRequestDto) {
         CheckList checkList = CheckList.builder()
                 .cleanType(checkListRequestDto.cleanType())
                 .drinkType(checkListRequestDto.drinkType())
                 .homeType(checkListRequestDto.homeType())
                 .lifePatternType(checkListRequestDto.lifePatternType())
                 .noiseType(checkListRequestDto.noiseType())
-                .sleepType(checkListRequestDto.sleepType())
+                .sleepGridingType(checkListRequestDto.sleepGridingType())
+                .sleepSnoreType(checkListRequestDto.sleepSnoreType())
+                .sleepTalkingType(checkListRequestDto.sleepTalkingType())
+                .sleepTurningType(checkListRequestDto.sleepTurningType())
                 .smokeType(checkListRequestDto.smokeType())
                 .user(user)
                 .build();
@@ -56,7 +65,10 @@ public class CheckList extends BaseTimeEntity {
         this.homeType = checkListRequestDto.homeType();
         this.lifePatternType = checkListRequestDto.lifePatternType();
         this.noiseType = checkListRequestDto.noiseType();
-        this.sleepType = checkListRequestDto.sleepType();
+        this.sleepGridingType = checkListRequestDto.sleepGridingType();
+        this.sleepSnoreType = checkListRequestDto.sleepSnoreType();
+        this.sleepTalkingType = checkListRequestDto.sleepTalkingType();
+        this.sleepTurningType = checkListRequestDto.sleepTurningType();
         this.smokeType = checkListRequestDto.smokeType();
     }
 }

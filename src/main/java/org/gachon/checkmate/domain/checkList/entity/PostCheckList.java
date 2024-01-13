@@ -27,8 +27,14 @@ public class PostCheckList extends BaseTimeEntity {
     private LifePatternType lifePatternType;
     @Convert(converter = NoiseTypeConverter.class)
     private NoiseType noiseType;
-    @Convert(converter = SleepTypeConverter.class)
-    private SleepType sleepType;
+    @Convert(converter = SleepGridingTypeConverter.class)
+    private SleepGridingType sleepGridingType;
+    @Convert(converter = SleepSnoreTypeConverter.class)
+    private SleepSnoreType sleepSnoreType;
+    @Convert(converter = SleepTalkingTypeConverter.class)
+    private SleepTalkingType sleepTalkingType;
+    @Convert(converter = SleepTurningTypeConverter.class)
+    private SleepTurningType sleepTurningType;
     @Convert(converter = SmokeTypeConverter.class)
     private SmokeType smokeType;
     @OneToOne(fetch = FetchType.LAZY)
@@ -42,7 +48,10 @@ public class PostCheckList extends BaseTimeEntity {
                 .homeType(checkListRequestDto.homeType())
                 .lifePatternType(checkListRequestDto.lifePatternType())
                 .noiseType(checkListRequestDto.noiseType())
-                .sleepType(checkListRequestDto.sleepType())
+                .sleepGridingType(checkListRequestDto.sleepGridingType())
+                .sleepSnoreType(checkListRequestDto.sleepSnoreType())
+                .sleepTalkingType(checkListRequestDto.sleepTalkingType())
+                .sleepTurningType(checkListRequestDto.sleepTurningType())
                 .smokeType(checkListRequestDto.smokeType())
                 .post(post)
                 .build();
@@ -56,7 +65,10 @@ public class PostCheckList extends BaseTimeEntity {
         this.homeType = checkListRequestDto.homeType();
         this.lifePatternType = checkListRequestDto.lifePatternType();
         this.noiseType = checkListRequestDto.noiseType();
-        this.sleepType = checkListRequestDto.sleepType();
+        this.sleepGridingType = checkListRequestDto.sleepGridingType();
+        this.sleepSnoreType = checkListRequestDto.sleepSnoreType();
+        this.sleepTalkingType = checkListRequestDto.sleepTalkingType();
+        this.sleepTurningType = checkListRequestDto.sleepTurningType();
         this.smokeType = checkListRequestDto.smokeType();
     }
 }

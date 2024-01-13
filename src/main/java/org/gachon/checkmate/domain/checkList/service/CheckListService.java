@@ -41,13 +41,7 @@ public class CheckListService {
     public CheckListResponseDto getCheckList(Long userId) {
         User user = findByIdOrThrow(userId);
         CheckList checkList = user.getCheckList();
-        return CheckListResponseDto.of(checkList.getCleanType().getDesc(),
-                checkList.getDrinkType().getDesc(),
-                checkList.getHomeType().getDesc(),
-                checkList.getLifePatternType().getDesc(),
-                checkList.getNoiseType().getDesc(),
-                checkList.getSleepType().getDesc(),
-                checkList.getSmokeType().getDesc());
+        return CheckListResponseDto.of(checkList);
     }
 
     private User findByIdOrThrow(Long userId) {
