@@ -18,8 +18,9 @@ import org.gachon.checkmate.domain.post.dto.support.PostPagingSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.Post;
-import org.gachon.checkmate.domain.post.entity.PostSortType;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
+import org.gachon.checkmate.domain.post.utils.PostSortType;
+import org.gachon.checkmate.domain.post.utils.PostSortingUtils;
 import org.gachon.checkmate.domain.scrap.repository.ScrapRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.error.exception.ForbiddenException;
@@ -70,7 +71,7 @@ public class PostService {
         PostSearchCondition condition = PostSearchCondition.of(type, key, gender, pageable);
         Page<PostSearchDto> postSearchList = getSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
-        sortByTypeForSearchResults(searchResults, condition.postSortType());
+        PostSortingUtils.sortByTypeForSearchResults(searchResults, condition.postSortType());
         List<PostSearchElementResponseDto> pagingSearchResults
                 = convertPaging(searchResults, pageable.getOffset(), pageable.getPageSize());
         return PostSearchResponseDto.of(pagingSearchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
@@ -123,21 +124,6 @@ public class PostService {
                                 getRemainDate(postSearchDto.endDate()),
                                 getAccuracy(postSearchDto.postCheckList(), checkList)))
                 .collect(Collectors.toList());
-    }
-
-    private void sortByTypeForSearchResults(List<PostSearchElementResponseDto> posts, PostSortType postSortType) {
-        if (postSortType.equals(PostSortType.ACCURACY))
-            sortByAccuracyType(posts);
-        else if (postSortType.equals(PostSortType.REMAIN_DATE))
-            sortByRemainDate(posts);
-    }
-
-    private void sortByAccuracyType(List<PostSearchElementResponseDto> posts) {
-        posts.sort(Comparator.comparingInt(PostSearchElementResponseDto::accuracy));
-    }
-
-    private void sortByRemainDate(List<PostSearchElementResponseDto> posts) {
-        posts.sort(Comparator.comparingInt(PostSearchElementResponseDto::remainDate));
     }
 
     private int getAccuracy(PostCheckList postCheckList, CheckList checkList) {
