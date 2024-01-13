@@ -9,14 +9,16 @@ public record CheckListResponseDto(
         String homeType,
         String lifePatterType,
         String noiseType,
-        String sleepType
+        String sleepType,
+        String smokeType
 ) {
     public static CheckListResponseDto of(String cleanType,
                                           String drinkType,
                                           String homeType,
                                           String lifePatterType,
                                           String noiseType,
-                                          String sleepType) {
+                                          String sleepType,
+                                          String smokeType) {
         return CheckListResponseDto.builder()
                 .cleanType(cleanType)
                 .drinkType(drinkType)
@@ -24,6 +26,7 @@ public record CheckListResponseDto(
                 .lifePatterType(lifePatterType)
                 .noiseType(noiseType)
                 .sleepType(sleepType)
+                .smokeType(smokeType)
                 .build();
     }
 }
