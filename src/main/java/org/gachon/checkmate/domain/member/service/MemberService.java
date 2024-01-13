@@ -45,6 +45,12 @@ public class MemberService {
         return new EmailResponseDto(authNum);
     }
 
+    public EmailResponseDto sendMailForResetPassword(EmailPostRequestDto emailPostRequestDto) {
+        checkAlreadySignedUpEmail(emailPostRequestDto.email());
+        String authNum = mailProvider.sendMail(emailPostRequestDto.email(), "email");
+        return new EmailResponseDto(authNum);
+    }
+
     public MemberSignUpResponseDto signUp(MemberSignUpRequestDto memberSignUpRequestDto) {
         validatePassword(memberSignUpRequestDto.password());
         Long newMemberId = createMember(memberSignUpRequestDto);
@@ -104,6 +110,12 @@ public class MemberService {
     private void checkDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email)) {
             throw new ConflictException(DUPLICATE_EMAIL);
+        }
+    }
+
+    private void checkAlreadySignedUpEmail(String email) {
+        if (!userRepository.existsByEmail(email)) {
+            throw new ConflictException(UNAFFILIATED_EMAIL);
         }
     }
 
