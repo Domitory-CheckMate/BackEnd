@@ -12,7 +12,11 @@ import org.gachon.checkmate.domain.chat.mongorepository.ChatRepository;
 import org.gachon.checkmate.domain.chat.repository.ChatRoomRepository;
 import org.gachon.checkmate.domain.chat.repository.LiveChatRoomRepository;
 import org.gachon.checkmate.domain.chat.util.ListComparatorChatSendTime;
+import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserQuerydslRepository;
+import org.gachon.checkmate.domain.member.repository.UserRepository;
+import org.gachon.checkmate.global.error.ErrorCode;
+import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
 import org.gachon.checkmate.global.socket.error.SocketErrorCode;
 import org.gachon.checkmate.global.socket.error.SocketNotFoundException;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.gachon.checkmate.domain.chat.entity.ChatRoom.createChatRoom;
 import static org.gachon.checkmate.domain.chat.entity.LiveChatRoom.createLiveChatRoom;
 
 @Service
@@ -34,6 +37,7 @@ import static org.gachon.checkmate.domain.chat.entity.LiveChatRoom.createLiveCha
 public class ChatService {
 
     private final SimpMessageSendingOperations sendingOperations;
+    private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final LiveChatRoomRepository liveChatRoomRepository;
@@ -124,7 +128,7 @@ public class ChatService {
             chatRepository.updateChatRead(chatRoomId, userId);
         }
         else {
-            ChatRoom chatRoom = createChatRoom(chatRoomId, userId, request.otherUserId());
+            ChatRoom chatRoom = createChatRoomByIds(chatRoomId, userId, request.otherUserId());
             chatRoomRepository.save(chatRoom);
         }
         return ChatRoomEnterResponseDto.of(userId, chatRoomId);
@@ -140,6 +144,12 @@ public class ChatService {
         Long userTotalNotReadCount = getUserTotalNotReadCount(chatRooms, userId);
 
         return ChatTotalNotReadResponseDto.of(userTotalNotReadCount);
+    }
+
+    private ChatRoom createChatRoomByIds(String chatRoomId, Long firstUserId, Long secondUserId) {
+        User firstUser = getUserOrThrow(firstUserId);
+        User secondUser = getUserOrThrow(secondUserId);
+        return ChatRoom.createChatRoom(chatRoomId, firstUser, secondUser);
     }
 
     private void sendNotificationToOtherUser(Boolean isOtherUserInChatRoom, Chat savedChat, Long otherUserId) {
@@ -185,11 +195,11 @@ public class ChatService {
     }
 
     private Long getChatRoomOtherUserId(ChatRoom chatRoom, Long userId) {
-        return chatRoom.getFirstMemberId().equals(userId) ? chatRoom.getSecondMemberId() : chatRoom.getFirstMemberId();
+        return chatRoom.getFirstUser().getId().equals(userId) ? chatRoom.getSecondUser().getId() : chatRoom.getFirstUser().getId();
     }
 
     private List<ChatRoom> getUserChatRoomsByUserId(Long userId) {
-        return chatRoomRepository.findAllByFirstMemberIdOrSecondMemberId(userId, userId);
+        return chatRoomRepository.findUserAllChatRoom(userId);
     }
 
     private ChatUserInfoDto getUserChatUserInfoByUserId(ChatListRequestDto request) {
@@ -211,7 +221,7 @@ public class ChatService {
     }
 
     private Long getOtherUserIdInChatRoom(ChatRoom chatRoom, Long myUserId) {
-        return chatRoom.getFirstMemberId().equals(myUserId) ? chatRoom.getSecondMemberId() : chatRoom.getFirstMemberId();
+        return chatRoom.getFirstUser().getId().equals(myUserId) ? chatRoom.getSecondUser().getId() : chatRoom.getFirstUser().getId();
     }
 
     private boolean validateChatRoomExist(String chatRoomId) {
@@ -228,6 +238,11 @@ public class ChatService {
 
     private String getRoomIdInAttributes(Map<String, Object> simpSessionAttributes) {
         return (String)simpSessionAttributes.get("roomId");
+    }
+
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

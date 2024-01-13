@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.chat.entity.ChatRoom;
 import org.gachon.checkmate.domain.member.entity.User;
-import org.gachon.checkmate.domain.post.entity.Post;
-import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
