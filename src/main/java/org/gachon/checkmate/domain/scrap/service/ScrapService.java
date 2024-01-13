@@ -2,7 +2,6 @@ package org.gachon.checkmate.domain.scrap.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
-import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
@@ -26,6 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.gachon.checkmate.domain.checkList.utils.MatchRateCalculator.getAccuracy;
 import static org.gachon.checkmate.global.error.ErrorCode.*;
 
 @RequiredArgsConstructor
@@ -63,21 +63,6 @@ public class ScrapService {
                                 getRemainDate(postSearchDto.endDate()),
                                 getAccuracy(postSearchDto.postCheckList(), checkList)))
                 .collect(Collectors.toList());
-    }
-
-    private int getAccuracy(PostCheckList postCheckList, CheckList checkList) {
-        int count = 0;
-        count += getRateForFrequencyElement(postCheckList.getCleanType().getCode(), checkList.getCleanType().getCode(), 4);
-        count += getRateForFrequencyElement(postCheckList.getDrinkType().getCode(), checkList.getDrinkType().getCode(), 3);
-        count += getRateForFrequencyElement(postCheckList.getHomeType().getCode(), checkList.getHomeType().getCode(), 3);
-        count = postCheckList.getLifePatternType().equals(checkList.getLifePatternType()) ? count + 1 : count;
-        count = postCheckList.getNoiseType().equals(checkList.getNoiseType()) ? count + 1 : count;
-        count = postCheckList.getSleepType().equals(checkList.getSleepType()) ? count + 1 : count;
-        return (int) (count / 6) * 100;
-    }
-
-    private int getRateForFrequencyElement(String firstEnumCode, String secondEnumCode, int size) {
-        return 1 - Math.abs(Integer.parseInt(firstEnumCode) - Integer.parseInt(secondEnumCode)) / size;
     }
 
     private int getRemainDate(LocalDate endDate) {

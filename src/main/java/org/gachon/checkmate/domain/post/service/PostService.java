@@ -19,7 +19,6 @@ import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
 import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
-import org.gachon.checkmate.domain.post.utils.PostSortType;
 import org.gachon.checkmate.domain.post.utils.PostSortingUtils;
 import org.gachon.checkmate.domain.scrap.repository.ScrapRepository;
 import org.gachon.checkmate.global.error.exception.EntityNotFoundException;
@@ -32,10 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.gachon.checkmate.domain.checkList.utils.MatchRateCalculator.getAccuracy;
 import static org.gachon.checkmate.global.error.ErrorCode.*;
 import static org.gachon.checkmate.global.utils.PagingUtils.convertPaging;
 
@@ -110,12 +109,6 @@ public class PostService {
         return PostStateUpdateResponseDto.of(post);
     }
 
-    private void validatePostWriter(User user, Post post) {
-        if (!post.getUser().getId().equals(user.getId())) {
-            throw new ForbiddenException(NOT_POST_WRITER);
-        }
-    }
-
     private List<PostSearchElementResponseDto> createPostSearchResponseDto(Page<PostSearchDto> postSearchDtoList, CheckList checkList) {
         return postSearchDtoList.stream()
                 .map(postSearchDto ->
@@ -126,20 +119,14 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    private int getAccuracy(PostCheckList postCheckList, CheckList checkList) {
-        int count = 0;
-        count += postCheckList.getCleanType().compareRateTo(checkList.getCleanType());
-        count += postCheckList.getDrinkType().compareRateTo(checkList.getDrinkType());
-        count += postCheckList.getHomeType().compareRateTo(checkList.getHomeType());
-        count += postCheckList.getLifePatternType().compareRateTo(checkList.getLifePatternType());
-        count += postCheckList.getNoiseType().compareRateTo(checkList.getNoiseType());
-        count += postCheckList.getSleepType().compareRateTo(checkList.getSleepType());
-        count += postCheckList.getSmokeType().compareRateTo(checkList.getSmokeType());
-        return (int) (count / 7) * 100;
-    }
-
     private int getRemainDate(LocalDate endDate) {
         return (int) LocalDate.now().until(endDate, ChronoUnit.DAYS);
+    }
+
+    private void validatePostWriter(User user, Post post) {
+        if (!post.getUser().getId().equals(user.getId())) {
+            throw new ForbiddenException(NOT_POST_WRITER);
+        }
     }
 
     private void validateDuplicateTitle(String title) {
