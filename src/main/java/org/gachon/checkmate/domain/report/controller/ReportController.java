@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/report")
 @RestController
 public class ReportController {
+
     private final ReportService reportService;
 
     @PostMapping("/post")
@@ -29,7 +30,7 @@ public class ReportController {
 
     @PostMapping("/chat-room")
     public ResponseEntity<SuccessResponse<?>> reportChatRoom(@UserId final Long userId,
-                                                         @RequestBody @Valid final ChatRoomReportRequestDto requestDto) {
+                                                             @RequestBody @Valid final ChatRoomReportRequestDto requestDto) {
         reportService.reportChatRoom(userId, requestDto);
         return SuccessResponse.created(null);
     }
