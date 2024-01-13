@@ -13,6 +13,8 @@ import org.gachon.checkmate.global.common.BaseTimeEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.gachon.checkmate.domain.member.entity.UserState.JOIN;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
@@ -55,6 +57,7 @@ public class User extends BaseTimeEntity {
                 .major(major)
                 .mbtiType(mbti)
                 .gender(gender)
+                .userState(JOIN)
                 .build();
     }
 

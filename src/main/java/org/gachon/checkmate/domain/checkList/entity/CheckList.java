@@ -23,12 +23,14 @@ public class CheckList extends BaseTimeEntity {
     private DrinkType drinkType;
     @Convert(converter = HomeTypeConverter.class)
     private HomeType homeType;
-    @Convert(converter = LifePatterTypeConverter.class)
-    private LifePatterType lifePatterType;
+    @Convert(converter = LifePatternTypeConverter.class)
+    private LifePatternType lifePatternType;
     @Convert(converter = NoiseTypeConverter.class)
     private NoiseType noiseType;
     @Convert(converter = SleepTypeConverter.class)
     private SleepType sleepType;
+    @Convert(converter = SmokeTypeConverter.class)
+    private SmokeType smokeType;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -38,9 +40,10 @@ public class CheckList extends BaseTimeEntity {
                 .cleanType(checkListRequestDto.cleanType())
                 .drinkType(checkListRequestDto.drinkType())
                 .homeType(checkListRequestDto.homeType())
-                .lifePatterType(checkListRequestDto.lifePatterType())
+                .lifePatternType(checkListRequestDto.lifePatternType())
                 .noiseType(checkListRequestDto.noiseType())
                 .sleepType(checkListRequestDto.sleepType())
+                .smokeType(checkListRequestDto.smokeType())
                 .user(user)
                 .build();
         user.setCheckList(checkList);
@@ -51,7 +54,7 @@ public class CheckList extends BaseTimeEntity {
         this.cleanType = checkListRequestDto.cleanType();
         this.drinkType = checkListRequestDto.drinkType();
         this.homeType = checkListRequestDto.homeType();
-        this.lifePatterType = checkListRequestDto.lifePatterType();
+        this.lifePatternType = checkListRequestDto.lifePatternType();
         this.noiseType = checkListRequestDto.noiseType();
         this.sleepType = checkListRequestDto.sleepType();
     }

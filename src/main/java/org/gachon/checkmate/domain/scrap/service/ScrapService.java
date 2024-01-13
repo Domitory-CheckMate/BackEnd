@@ -70,7 +70,7 @@ public class ScrapService {
         count += getRateForFrequencyElement(postCheckList.getCleanType().getCode(), checkList.getCleanType().getCode(), 4);
         count += getRateForFrequencyElement(postCheckList.getDrinkType().getCode(), checkList.getDrinkType().getCode(), 3);
         count += getRateForFrequencyElement(postCheckList.getHomeType().getCode(), checkList.getHomeType().getCode(), 3);
-        count = postCheckList.getLifePatterType().equals(checkList.getLifePatterType()) ? count + 1 : count;
+        count = postCheckList.getLifePatternType().equals(checkList.getLifePatternType()) ? count + 1 : count;
         count = postCheckList.getNoiseType().equals(checkList.getNoiseType()) ? count + 1 : count;
         count = postCheckList.getSleepType().equals(checkList.getSleepType()) ? count + 1 : count;
         return (int) (count / 6) * 100;
