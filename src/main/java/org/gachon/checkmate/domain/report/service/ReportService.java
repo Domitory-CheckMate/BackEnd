@@ -60,7 +60,7 @@ public class ReportService {
 
     private void validateUserAlreadyReportChatRoom(User user, ChatRoom chatRoom) {
         if(chatRoomReportRepository.existsChatRoomReportByUserIdAndChatRoomId(user.getId(), chatRoom.getId())) {
-            throw new ConflictException(DUPLICATE_POST_REPORT);
+            throw new ConflictException(DUPLICATE_CHATROOM_REPORT);
         }
     }
 
