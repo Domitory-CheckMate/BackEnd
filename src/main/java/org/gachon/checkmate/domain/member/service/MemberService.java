@@ -115,7 +115,7 @@ public class MemberService {
 
     private void checkAlreadySignedUpEmail(String email) {
         if (!userRepository.existsByEmail(email)) {
-            throw new ConflictException(UNAFFILIATED_EMAIL);
+            throw new EntityNotFoundException(UNAFFILIATED_EMAIL);
         }
     }
 

@@ -47,6 +47,7 @@ public enum ErrorCode {
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 게시글을 찾을 수 없습니다."),
     CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 채팅방을 찾을 수 없습니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 리프레시 토큰을 찾을 수 없습니다. 다시 로그인해 주세요."),
+    UNAFFILIATED_EMAIL(HttpStatus.CONFLICT, "가입되지 않은 이메일입니다."),
 
     /**
      * 405 Method Not Allowed
@@ -61,7 +62,6 @@ public enum ErrorCode {
     DUPLICATE_CHECK_LIST(HttpStatus.CONFLICT, "체크리스트가 이미 존재합니다."),
     DUPLICATE_POST_REPORT(HttpStatus.CONFLICT, "이전에 신고했던 게시물입니다."),
     DUPLICATE_CHATROOM_REPORT(HttpStatus.CONFLICT, "이전에 신고했던 채팅방입니다."),
-    UNAFFILIATED_EMAIL(HttpStatus.CONFLICT, "가입되지 않은 이메일입니다."),
 
     /**
      * 500 Internal Server Error
