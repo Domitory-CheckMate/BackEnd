@@ -28,6 +28,8 @@ public class SecurityConfig {
     private static final String[] whiteList = {
             "/",
             "api/member/email",
+            "api/member/email/reset",
+            "api/member/reset",
             "api/member/signup",
             "api/member/signin",
             "api/member/reissue",

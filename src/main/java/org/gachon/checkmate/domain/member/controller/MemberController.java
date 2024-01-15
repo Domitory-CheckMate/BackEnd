@@ -23,6 +23,12 @@ public class MemberController {
         return SuccessResponse.ok(emailResponseDto);
     }
 
+    @PostMapping("/email/reset")
+    public ResponseEntity<SuccessResponse<?>> sendMailForResetPassword(@RequestBody final EmailPostRequestDto emailPostRequestDto) {
+        final EmailResponseDto emailResponseDto = memberService.sendMailForResetPassword(emailPostRequestDto);
+        return SuccessResponse.ok(emailResponseDto);
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<SuccessResponse<?>> signUp(@RequestBody final MemberSignUpRequestDto memberSignUpRequestDto){
         final MemberSignUpResponseDto memberSignUpResponseDto = memberService.signUp(memberSignUpRequestDto);
