@@ -7,13 +7,14 @@ import org.gachon.checkmate.global.utils.EnumField;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public enum SleepType implements EnumField {
-    SNORE("1", "코골이"),
-    GRIDING("2", "이갈이"),
-    TALKING("3", "잠꼬대"),
-    TURNING("4", "뒤척임"),
-    NOTHING("5", "없음");
+public enum SleepGridingType implements EnumField {
+    TRUE("1", "코골이"),
+    FALSE("2", "false");
 
     private final String code;
     private final String desc;
+
+    public int compareRateTo(SleepGridingType e) {
+        return this.equals(e) ? 1 : 0;
+    }
 }

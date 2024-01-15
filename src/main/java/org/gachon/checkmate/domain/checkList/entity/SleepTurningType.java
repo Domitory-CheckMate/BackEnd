@@ -7,15 +7,14 @@ import org.gachon.checkmate.global.utils.EnumField;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public enum SmokeType implements EnumField {
-    SMOKE("1", "흡연자 선호"),
-    NONE("2", "비흡연자 선호");
+public enum SleepTurningType implements EnumField {
+    TRUE("1", "뒤척임"),
+    FALSE("2", "false");
 
     private final String code;
     private final String desc;
 
-    public int compareRateTo(SmokeType e) {
+    public int compareRateTo(SleepTurningType e) {
         return this.equals(e) ? 1 : 0;
     }
 }
-

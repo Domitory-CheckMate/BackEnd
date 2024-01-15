@@ -13,6 +13,11 @@ public enum DrinkType implements EnumField {
     OFTEN("3", "1주에 4~5번"),
     ALWAYS("4", "매일");
 
-    private String code;
-    private String desc;
+    private final String code;
+    private final String desc;
+    private final int size = 4;
+
+    public int compareRateTo(DrinkType e) {
+        return 1 - Math.abs(Integer.parseInt(this.getCode()) - Integer.parseInt(e.getCode())) / (this.size - 1);
+    }
 }

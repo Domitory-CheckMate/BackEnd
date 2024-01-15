@@ -12,6 +12,11 @@ public enum NoiseType implements EnumField {
     OUTSIDE("2", "전화는 밖에서"),
     SHORT("3", "전화는 짧게"),
     ANYWAY("4", "상관없음");
-    private String code;
-    private String desc;
+
+    private final String code;
+    private final String desc;
+
+    public int compareRateTo(NoiseType e) {
+        return this.equals(e) ? 1 : 0;
+    }
 }

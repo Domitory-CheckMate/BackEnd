@@ -8,7 +8,10 @@ public record CheckListRequestDto(
         HomeType homeType,
         LifePatternType lifePatternType,
         NoiseType noiseType,
-        SleepType sleepType,
+        SleepGridingType sleepGridingType,
+        SleepSnoreType sleepSnoreType,
+        SleepTalkingType sleepTalkingType,
+        SleepTurningType sleepTurningType,
         SmokeType smokeType
 
 ) {
