@@ -10,11 +10,11 @@ import static org.gachon.checkmate.global.error.ErrorCode.INVALID_PAGING_SIZE;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PagingUtils {
-    public static <T> List<T> convertPaging(List<T> dataList, long page, int size) {
-        if (dataList.size() <= page * size)
+    public static <T> List<T> convertPaging(List<T> dataList, long offset, int size) {
+        if (dataList.size() <= offset)
             throw new InvalidValueException(INVALID_PAGING_SIZE);
-        int startIndex = (int) page * size;
-        int endIndex = Math.min(dataList.size(), (int) (page + 1) * size);
+        int startIndex = (int) offset;
+        int endIndex = Math.min(dataList.size(), startIndex + size);
         return dataList.subList(startIndex, endIndex);
     }
 }

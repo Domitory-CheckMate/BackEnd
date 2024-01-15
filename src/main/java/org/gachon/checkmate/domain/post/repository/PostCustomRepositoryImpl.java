@@ -41,6 +41,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         eqPostId(postId)
                 )
+                .orderBy(post.id.desc())
                 .fetchOne());
     }
 
@@ -67,6 +68,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         eqGenderType(condition.genderType()),
                         validateUserState()
                 )
+                .orderBy(post.id.desc())
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
@@ -106,6 +108,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 )
                 .offset(condition.pageable().getOffset())
                 .limit(condition.pageable().getPageSize())
+                .orderBy(post.id.desc())
                 .fetch();
 
         JPAQuery<Post> countQuery = queryFactory
