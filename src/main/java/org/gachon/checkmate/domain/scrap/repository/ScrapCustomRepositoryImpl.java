@@ -46,6 +46,7 @@ public class ScrapCustomRepositoryImpl implements ScrapCustomRepository {
                         eqUserId(condition.userId()),
                         validateUserState()
                 )
+                .orderBy(post.id.desc())
                 .offset(condition.pageable().getOffset())
                 .limit(condition.pageable().getPageSize())
                 .fetch();
