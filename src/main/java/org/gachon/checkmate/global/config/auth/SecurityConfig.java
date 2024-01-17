@@ -33,6 +33,7 @@ public class SecurityConfig {
             "api/member/signup",
             "api/member/signin",
             "api/member/reissue",
+            "api/department",
             "/ws/*",
             "/ws/**"
     };
