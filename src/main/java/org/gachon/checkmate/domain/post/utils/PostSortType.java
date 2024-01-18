@@ -8,8 +8,8 @@ import org.gachon.checkmate.global.utils.EnumField;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum PostSortType implements EnumField {
-    ACCURACY("1", "accuracy"),
-    REGISTER("2", "register"),
+    REGISTER("1", "register"),
+    ACCURACY("2", "accuracy"),
     REMAIN_DATE("3", "remain date"),
     SCRAP("4", "scrap");
 
