@@ -17,7 +17,7 @@ public enum HomeType implements EnumField {
     private final String desc;
     private final int size = 4;
 
-    public int compareRateTo(HomeType e) {
-        return 1 - Math.abs(Integer.parseInt(this.getCode()) - Integer.parseInt(e.getCode())) / (this.size - 1);
+    public double compareRateTo(HomeType e) {
+        return 1 - (double) Math.abs(Integer.parseInt(this.getCode()) - Integer.parseInt(e.getCode())) / (this.size - 1);
     }
 }
