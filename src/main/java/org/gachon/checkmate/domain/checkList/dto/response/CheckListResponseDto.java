@@ -9,7 +9,8 @@ public record CheckListResponseDto(
         String drinkType,
         String homeType,
         String lifePatterType,
-        String noiseType,
+        String callType,
+        String earPhoneType,
         String sleepGridingType,
         String sleepSnoreType,
         String sleepTalkingType,
@@ -22,7 +23,8 @@ public record CheckListResponseDto(
                 .drinkType(checkList.getDrinkType().getDesc())
                 .homeType(checkList.getHomeType().getDesc())
                 .lifePatterType(checkList.getLifePatternType().getDesc())
-                .noiseType(checkList.getNoiseType().getDesc())
+                .callType(checkList.getCallType().getCode())
+                .earPhoneType(checkList.getEarPhoneType().getCode())
                 .sleepGridingType(checkList.getSleepGridingType().getDesc())
                 .sleepSnoreType(checkList.getSleepSnoreType().getDesc())
                 .sleepTalkingType(checkList.getSleepTalkingType().getDesc())
@@ -37,7 +39,8 @@ public record CheckListResponseDto(
                 .drinkType(checkList.getDrinkType().getDesc())
                 .homeType(checkList.getHomeType().getDesc())
                 .lifePatterType(checkList.getLifePatternType().getDesc())
-                .noiseType(checkList.getNoiseType().getDesc())
+                .callType(checkList.getCallType().getCode())
+                .earPhoneType(checkList.getEarPhoneType().getCode())
                 .sleepGridingType(checkList.getSleepGridingType().getDesc())
                 .sleepSnoreType(checkList.getSleepSnoreType().getDesc())
                 .sleepTalkingType(checkList.getSleepTalkingType().getDesc())
