@@ -23,12 +23,12 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<SuccessResponse<?>> getAllPosts(// @UserId final Long userId,
+    public ResponseEntity<SuccessResponse<?>> getAllPosts(@UserId final Long userId,
                                                           @RequestParam(required = false) final String key,
                                                           @RequestParam final String type,
                                                           @RequestParam(required = false) final String gender,
                                                           final Pageable pageable) {
-        final PostSearchResponseDto responseDto = postService.getAllPosts(1L, key, type, gender, pageable);
+        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, key, type, gender, pageable);
         return SuccessResponse.ok(responseDto);
     }
 

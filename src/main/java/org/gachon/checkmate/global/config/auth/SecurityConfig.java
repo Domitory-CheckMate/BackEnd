@@ -35,9 +35,7 @@ public class SecurityConfig {
             "api/member/reissue",
             "api/department",
             "/ws/*",
-            "/ws/**",
-            "/*",
-            "/**"
+            "/ws/**"
     };
 
     @Bean
