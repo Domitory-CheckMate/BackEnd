@@ -25,8 +25,10 @@ public class CheckList extends BaseTimeEntity {
     private HomeType homeType;
     @Convert(converter = LifePatternTypeConverter.class)
     private LifePatternType lifePatternType;
-    @Convert(converter = NoiseTypeConverter.class)
-    private NoiseType noiseType;
+    @Convert(converter = CallTypeConverter.class)
+    private CallType callType;
+    @Convert(converter = EarPhoneTypeConverter.class)
+    private EarPhoneType earPhoneType;
     @Convert(converter = SleepGridingTypeConverter.class)
     private SleepGridingType sleepGridingType;
     @Convert(converter = SleepSnoreTypeConverter.class)
@@ -47,7 +49,8 @@ public class CheckList extends BaseTimeEntity {
                 .drinkType(checkListRequestDto.drinkType())
                 .homeType(checkListRequestDto.homeType())
                 .lifePatternType(checkListRequestDto.lifePatternType())
-                .noiseType(checkListRequestDto.noiseType())
+                .callType(checkListRequestDto.callType())
+                .earPhoneType(checkListRequestDto.earPhoneType())
                 .sleepGridingType(checkListRequestDto.sleepGridingType())
                 .sleepSnoreType(checkListRequestDto.sleepSnoreType())
                 .sleepTalkingType(checkListRequestDto.sleepTalkingType())
@@ -64,7 +67,8 @@ public class CheckList extends BaseTimeEntity {
         this.drinkType = checkListRequestDto.drinkType();
         this.homeType = checkListRequestDto.homeType();
         this.lifePatternType = checkListRequestDto.lifePatternType();
-        this.noiseType = checkListRequestDto.noiseType();
+        this.callType = checkListRequestDto.callType();
+        this.earPhoneType = checkListRequestDto.earPhoneType();
         this.sleepGridingType = checkListRequestDto.sleepGridingType();
         this.sleepSnoreType = checkListRequestDto.sleepSnoreType();
         this.sleepTalkingType = checkListRequestDto.sleepTalkingType();
