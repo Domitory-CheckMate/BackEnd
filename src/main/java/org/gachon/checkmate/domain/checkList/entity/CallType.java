@@ -8,8 +8,8 @@ import org.gachon.checkmate.global.utils.EnumField;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum CallType implements EnumField {
-    OUTSIDE("1", "밖에서"),
-    INSIDE("2", "안에서"),
+    OUTSIDE("1", "통화는 밖에서"),
+    INSIDE("2", "5분 이내는 안에서"),
     ANYWAY("3", "상관없음");
 
     private final String code;
