@@ -7,16 +7,14 @@ import org.gachon.checkmate.global.utils.EnumField;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public enum NoiseType implements EnumField {
-    EARPHONE("1", "이어폰 필수"),
-    OUTSIDE("2", "전화는 밖에서"),
-    SHORT("3", "전화는 짧게"),
-    ANYWAY("4", "상관없음");
+public enum EarPhoneType implements EnumField {
+    NEED("1", "이어폰 필수"),
+    NOT_NEED("2", "상관없음");
 
     private final String code;
     private final String desc;
 
-    public int compareRateTo(NoiseType e) {
+    public int compareRateTo(EarPhoneType e) {
         return this.equals(e) ? 1 : 0;
     }
 }
