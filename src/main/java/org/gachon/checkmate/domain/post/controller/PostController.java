@@ -24,11 +24,12 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<SuccessResponse<?>> getAllPosts(@UserId final Long userId,
-                                                          @RequestParam(required = false) final String key,
                                                           @RequestParam final String type,
+                                                          @RequestParam(required = false) final String key,
                                                           @RequestParam(required = false) final String gender,
+                                                          @RequestParam(required = false) final String dormitory,
                                                           final Pageable pageable) {
-        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, key, type, gender, pageable);
+        final PostSearchResponseDto responseDto = postService.getAllPosts(userId, key, type, gender, dormitory, pageable);
         return SuccessResponse.ok(responseDto);
     }
 
@@ -54,7 +55,7 @@ public class PostController {
         return SuccessResponse.ok(responseDto);
     }
 
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<SuccessResponse<?>> updateMyPost(@UserId final Long userId,
                                                            @PathVariable("id") final Long postId,
                                                            @RequestBody @Valid final PostUpdateRequestDto requestDto) {

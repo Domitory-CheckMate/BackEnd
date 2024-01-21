@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.member.entity.GenderType;
 import org.gachon.checkmate.domain.member.entity.UserState;
 import org.gachon.checkmate.domain.post.dto.support.*;
+import org.gachon.checkmate.domain.post.entity.DormitoryType;
 import org.gachon.checkmate.domain.post.entity.ImportantKeyType;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.springframework.data.domain.Page;
@@ -67,6 +68,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         eqImportantKey(condition.importantKeyType()),
                         eqGenderType(condition.genderType()),
+                        eqDormitoryType(condition.dormitoryType()),
                         validateUserState()
                 )
                 .orderBy(post.id.desc())
@@ -79,6 +81,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(
                         eqImportantKey(condition.importantKeyType()),
                         eqGenderType(condition.genderType()),
+                        eqDormitoryType(condition.dormitoryType()),
                         validateUserState()
                 );
         return PageableExecutionUtils.getPage(content, condition.pageable(), countQuery::fetchCount);
@@ -135,6 +138,10 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     private BooleanExpression eqGenderType(GenderType genderType) {
         return genderType != null ? user.gender.eq(genderType) : null;
+    }
+
+    private BooleanExpression eqDormitoryType(DormitoryType dormitoryType) {
+        return dormitoryType != null ? post.dormitoryType.eq(dormitoryType) : null;
     }
 
     private BooleanExpression eqImportantKey(ImportantKeyType importantKeyType) {

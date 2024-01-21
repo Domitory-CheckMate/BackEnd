@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.member.entity.User;
-import org.gachon.checkmate.domain.post.converter.ImportantKeyTypeConverter;
-import org.gachon.checkmate.domain.post.converter.PostStateConverter;
-import org.gachon.checkmate.domain.post.converter.RoomTypeConverter;
-import org.gachon.checkmate.domain.post.converter.SimilarityKeyTypeConverter;
+import org.gachon.checkmate.domain.post.converter.*;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
@@ -35,6 +32,8 @@ public class Post extends BaseTimeEntity {
     private PostState postState;
     @Convert(converter = RoomTypeConverter.class)
     private RoomType roomType;
+    @Convert(converter = DormitoryTypeConverter.class)
+    private DormitoryType dormitoryType;
     @Convert(converter = ImportantKeyTypeConverter.class)
     private ImportantKeyType importantKeyType;
     @Convert(converter = SimilarityKeyTypeConverter.class)
@@ -55,6 +54,7 @@ public class Post extends BaseTimeEntity {
                 .endDate(postCreateRequestDto.endDate())
                 .postState(PostState.RECRUITING)
                 .roomType(postCreateRequestDto.roomType())
+                .dormitoryType(postCreateRequestDto.dormitoryType())
                 .importantKeyType(postCreateRequestDto.importantKey())
                 .similarityKeyType(postCreateRequestDto.similarityKey())
                 .user(user)
@@ -77,6 +77,7 @@ public class Post extends BaseTimeEntity {
         this.importantKeyType = postUpdateRequestDto.importantKey();
         this.similarityKeyType = postUpdateRequestDto.similarityKey();
         this.roomType = postUpdateRequestDto.roomType();
+        this.dormitoryType = postUpdateRequestDto.dormitoryType();
         this.endDate = postUpdateRequestDto.endDate();
         this.postCheckList.updatePostCheckList(postUpdateRequestDto.checkList());
     }
