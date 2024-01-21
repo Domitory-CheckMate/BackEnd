@@ -28,6 +28,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     public Optional<PostDetailDto> findPostDetail(Long postId) {
         return Optional.ofNullable(queryFactory
                 .select(new QPostDetailDto(
+                        user.id,
                         user.major,
                         user.mbtiType,
                         user.gender,

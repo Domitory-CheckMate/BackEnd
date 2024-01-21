@@ -7,6 +7,7 @@ import org.gachon.checkmate.domain.member.entity.MbtiType;
 import org.gachon.checkmate.domain.member.entity.ProfileImageType;
 
 public record PostDetailDto(
+        Long memberId,
         String major,
         MbtiType mbti,
         GenderType gender,
@@ -15,7 +16,8 @@ public record PostDetailDto(
         PostCheckList postCheckList
 ) {
     @QueryProjection
-    public PostDetailDto(String major, MbtiType mbti, GenderType gender, String name, String profile, PostCheckList postCheckList) {
+    public PostDetailDto(Long memberId, String major, MbtiType mbti, GenderType gender, String name, String profile, PostCheckList postCheckList) {
+        this.memberId = memberId;
         this.major = major;
         this.mbti = mbti;
         this.gender = gender;
