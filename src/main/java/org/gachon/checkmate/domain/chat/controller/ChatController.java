@@ -27,22 +27,22 @@ public class ChatController {
     public void sendChat(@Header("simpSessionAttributes") Map<String, Object> simpSessionAttributes,
                              @Payload final ChatRequestDto request) {
         ChatResponseDto response = chatService.sendChat(simpSessionAttributes, request);
-        sendingOperations.convertAndSend("/queue/chat/"+simpSessionAttributes.get("roomId"), SocketBaseResponse.of(MessageType.CHAT, response));
+        sendingOperations.convertAndSend("/queue/chat/" + simpSessionAttributes.get("roomId"), SocketBaseResponse.of(MessageType.CHAT, response));
     }
 
     // 채팅방 정보 조회
     @MessageMapping("/room-list")
     public void getChatRoomList(@Header("simpSessionAttributes") Map<String, Object> simpSessionAttributes) {
         ChatRoomListResponseDto response = chatService.getChatRoomList(simpSessionAttributes);
-        sendingOperations.convertAndSend("/queue/user/"+simpSessionAttributes.get("userId"), SocketBaseResponse.of(MessageType.ROOM_LIST, response));
+        sendingOperations.convertAndSend("/queue/user/" + simpSessionAttributes.get("userId"), SocketBaseResponse.of(MessageType.ROOM_LIST, response));
     }
 
     // 이전 채팅 불러오기
     @MessageMapping("/chat-list")
     public void getChatList(@Header("simpSessionAttributes") Map<String, Object> simpSessionAttributes,
                                 @Payload final ChatListRequestDto request) {
-        final ChatListResponseDto response = chatService.getChatList(simpSessionAttributes, request);
-        sendingOperations.convertAndSend("/queue/user/" + simpSessionAttributes.get("userId"), SocketBaseResponse.of(MessageType.CHAT_LIST, response));
+        ChatListResponseDto response = chatService.getChatList(simpSessionAttributes, request);
+        sendingOperations.convertAndSend("/queue/chat/" + response.getChatRoomId(), SocketBaseResponse.of(MessageType.CHAT_LIST, response));
     }
 
     // 채팅방 입장하기
