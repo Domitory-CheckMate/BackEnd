@@ -98,7 +98,7 @@ public class ChatService {
         String chatRoomId = getChatRoomId(request.otherUserId(), userId);
 
         ChatUserInfoDto chatUserInfoDto = getUserChatUserInfoByUserId(request);
-        ChatListResponseDto response = ChatListResponseDto.of(chatRoomId, chatUserInfoDto);
+        ChatListResponseDto response = ChatListResponseDto.of(chatRoomId, userId, chatUserInfoDto);
 
         PageRequest pageRequest = PageRequest.of(request.pageNumber(), request.pageSize());
         Slice<Chat> chatMessages = chatRepository.findBeforeChatList(chatRoomId, pageRequest);
