@@ -66,7 +66,7 @@ public class MemberService {
         String accessToken = issueNewAccessToken(user.getId());
         String refreshToken = issueNewRefreshToken(user.getId());
         saveTokenInfo(user.getId(), refreshToken);
-        return MemberSignInResponseDto.of(user.getId(), accessToken, refreshToken);
+        return MemberSignInResponseDto.of(user.getId(), user.getGender(), accessToken, refreshToken);
     }
 
     public void withdraw(Long userId) {

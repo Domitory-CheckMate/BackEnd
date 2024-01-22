@@ -6,6 +6,7 @@ import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
 
 @Builder
 public record PostDetailResponseDto(
+        Long memberId,
         String name,
         String major,
         String profile,
@@ -16,6 +17,7 @@ public record PostDetailResponseDto(
 ) {
     public static PostDetailResponseDto of(PostDetailDto postDetailDto, CheckListResponseDto checkList, boolean isScrap) {
         return PostDetailResponseDto.builder()
+                .memberId(postDetailDto.memberId())
                 .name(postDetailDto.name())
                 .major(postDetailDto.major())
                 .profile(postDetailDto.profile())

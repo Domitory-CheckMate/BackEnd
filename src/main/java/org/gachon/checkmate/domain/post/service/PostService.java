@@ -65,9 +65,9 @@ public class PostService {
         return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
-    public PostSearchResponseDto getAllPosts(Long userId, String key, String type, String gender, Pageable pageable) {
+    public PostSearchResponseDto getAllPosts(Long userId, String key, String type, String gender, String dormitory, Pageable pageable) {
         CheckList checkList = getCheckList(userId);
-        PostSearchCondition condition = PostSearchCondition.of(type, key, gender, pageable);
+        PostSearchCondition condition = PostSearchCondition.of(type, key, gender, dormitory, pageable);
         Page<PostSearchDto> postSearchList = getSearchResults(condition);
         List<PostSearchElementResponseDto> searchResults = createPostSearchResponseDto(postSearchList, checkList);
         PostSortingUtils.sortByTypeForSearchResults(searchResults, condition.postSortType());
