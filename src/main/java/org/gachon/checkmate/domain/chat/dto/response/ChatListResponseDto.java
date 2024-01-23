@@ -15,6 +15,8 @@ public class ChatListResponseDto{
 
     private String chatRoomId;
 
+    private Long requestUserId;
+
     private ChatUserInfoDto chatUserInfoDto;
 
     @Builder.Default
@@ -26,9 +28,10 @@ public class ChatListResponseDto{
     @Builder.Default
     private Integer pageNumber = null;
 
-    public static ChatListResponseDto of(String chatRoomId, ChatUserInfoDto chatUserInfoDto) {
+    public static ChatListResponseDto of(String chatRoomId, Long requestUserId, ChatUserInfoDto chatUserInfoDto) {
         return ChatListResponseDto.builder()
                 .chatRoomId(chatRoomId)
+                .requestUserId(requestUserId)
                 .chatUserInfoDto(chatUserInfoDto)
                 .build();
     }
