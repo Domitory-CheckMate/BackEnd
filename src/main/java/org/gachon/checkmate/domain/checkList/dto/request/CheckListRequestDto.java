@@ -9,7 +9,7 @@ public record CheckListRequestDto(
         LifePatternType lifePatternType,
         CallType callType,
         EarPhoneType earPhoneType,
-        SleepGridingType sleepGridingType,
+        SleepGrindingType sleepGrindingType,
         SleepSnoreType sleepSnoreType,
         SleepTalkingType sleepTalkingType,
         SleepTurningType sleepTurningType,

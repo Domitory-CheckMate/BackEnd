@@ -8,7 +8,7 @@ import org.gachon.checkmate.global.utils.EnumField;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum SleepSnoreType implements EnumField {
-    TRUE("1", "이갈이"),
+    TRUE("1", "코골이"),
     FALSE("2", "false");
 
     private final String code;
