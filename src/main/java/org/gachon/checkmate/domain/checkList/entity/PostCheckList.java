@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gachon.checkmate.domain.checkList.converter.*;
 import org.gachon.checkmate.domain.checkList.dto.request.CheckListRequestDto;
+import org.gachon.checkmate.domain.checkList.dto.support.CheckListEnumDto;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
@@ -43,7 +44,7 @@ public class PostCheckList extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public static PostCheckList createPostCheckList(CheckListRequestDto checkListRequestDto, Post post) {
+    public static PostCheckList createPostCheckList(CheckListEnumDto checkListRequestDto, Post post) {
         PostCheckList checkList = PostCheckList.builder()
                 .cleanType(checkListRequestDto.cleanType())
                 .drinkType(checkListRequestDto.drinkType())
@@ -62,7 +63,7 @@ public class PostCheckList extends BaseTimeEntity {
         return checkList;
     }
 
-    public void updatePostCheckList(CheckListRequestDto checkListRequestDto) {
+    public void updatePostCheckList(CheckListEnumDto checkListRequestDto) {
         this.cleanType = checkListRequestDto.cleanType();
         this.drinkType = checkListRequestDto.drinkType();
         this.homeType = checkListRequestDto.homeType();
