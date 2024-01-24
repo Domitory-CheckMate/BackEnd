@@ -12,7 +12,7 @@ public class MatchRateCalculator {
         count += postCheckList.getLifePatternType().compareRateTo(checkList.getLifePatternType());
         count += postCheckList.getCallType().compareRateTo(checkList.getCallType());
         count += postCheckList.getEarPhoneType().compareRateTo(checkList.getEarPhoneType());
-        count += postCheckList.getSleepGridingType().compareRateTo(checkList.getSleepGridingType());
+        count += postCheckList.getSleepGrindingType().compareRateTo(checkList.getSleepGrindingType());
         count += postCheckList.getSleepSnoreType().compareRateTo(checkList.getSleepSnoreType());
         count += postCheckList.getSleepTalkingType().compareRateTo(checkList.getSleepTalkingType());
         count += postCheckList.getSleepTurningType().compareRateTo(checkList.getSleepTurningType());

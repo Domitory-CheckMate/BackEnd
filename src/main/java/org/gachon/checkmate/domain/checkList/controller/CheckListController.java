@@ -25,6 +25,7 @@ public class CheckListController {
     @PatchMapping("/my")
     public ResponseEntity<SuccessResponse<?>> updateCheckList(@UserId final Long userId,
                                                               @RequestBody final CheckListRequestDto checkListRequestDto) {
+        System.out.println("my logs " + checkListRequestDto.cleanType());
         checkListService.updateCheckList(userId, checkListRequestDto);
         return SuccessResponse.ok(null);
     }
