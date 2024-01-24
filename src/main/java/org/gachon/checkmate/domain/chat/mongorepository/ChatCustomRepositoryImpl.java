@@ -43,7 +43,7 @@ public class ChatCustomRepositoryImpl implements ChatCustomRepository {
         Update update = new Update();
 
         query.addCriteria(Criteria.where("chatRoomId").is(chatRoomId)
-                .and("sender").ne(userId));
+                .and("senderId").ne(userId));
 
         update.set("isRead", true);
         mongoTemplate.updateMulti(query, update, Chat.class);
