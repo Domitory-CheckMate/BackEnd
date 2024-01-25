@@ -3,20 +3,17 @@ package org.gachon.checkmate.domain.post.service;
 import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.checkList.dto.request.CheckListRequestDto;
 import org.gachon.checkmate.domain.checkList.dto.response.CheckListResponseDto;
+import org.gachon.checkmate.domain.checkList.dto.support.CheckListEnumDto;
 import org.gachon.checkmate.domain.checkList.entity.CheckList;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.checkList.repository.CheckListRepository;
 import org.gachon.checkmate.domain.checkList.repository.PostCheckListRepository;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.member.repository.UserRepository;
-import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
-import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
 import org.gachon.checkmate.domain.post.dto.response.*;
-import org.gachon.checkmate.domain.post.dto.support.PostDetailDto;
-import org.gachon.checkmate.domain.post.dto.support.PostPagingSearchCondition;
-import org.gachon.checkmate.domain.post.dto.support.PostSearchCondition;
-import org.gachon.checkmate.domain.post.dto.support.PostSearchDto;
+import org.gachon.checkmate.domain.post.dto.support.*;
 import org.gachon.checkmate.domain.post.entity.Post;
 import org.gachon.checkmate.domain.post.repository.PostRepository;
 import org.gachon.checkmate.domain.post.utils.PostSortingUtils;
@@ -49,12 +46,13 @@ public class PostService {
     private final PostCheckListRepository postCheckListRepository;
     private final ScrapRepository scrapRepository;
 
-    public void createPost(Long userId, PostCreateRequestDto requestDto) {
-        validateDuplicateTitle(requestDto.title());
-        validateAvailableEndDate(requestDto.endDate());
+    public void createPost(Long userId, PostRequestDto requestDto) {
+        PostEnumDto postEnumDto = PostRequestDto.toEnumDto(requestDto);
+        validateDuplicateTitle(postEnumDto.title());
+        validateAvailableEndDate(postEnumDto.endDate());
         User user = getUserOrThrow(userId);
-        Post post = createPostAndSave(requestDto, user);
-        createPostCheckListAndSave(requestDto.checkList(), post);
+        Post post = createPostAndSave(postEnumDto, user);
+        createPostCheckListAndSave(postEnumDto.checkList(), post);
     }
 
     public PostSearchResponseDto getMyPosts(Long userId, Pageable pageable) {
@@ -91,12 +89,13 @@ public class PostService {
         return PostSearchResponseDto.of(searchResults, postSearchList.getTotalPages(), postSearchList.getTotalElements());
     }
 
-    public PostUpdateResponseDto updateMyPost(Long userId, Long postId, PostUpdateRequestDto requestDto) {
+    public PostUpdateResponseDto updateMyPost(Long userId, Long postId, PostRequestDto requestDto) {
         User user = getUserOrThrow(userId);
         Post post = getPostOrThrow(postId);
+        PostEnumDto postEnumDto = PostRequestDto.toEnumDto(requestDto);
         validatePostWriter(user, post);
-        validateAvailableEndDate(requestDto.endDate());
-        post.updatePost(requestDto);
+        validateAvailableEndDate(postEnumDto.endDate());
+        post.updatePost(postEnumDto);
         CheckListResponseDto checkListResponseDto = CheckListResponseDto.ofPostCheckList(post.getPostCheckList());
         return PostUpdateResponseDto.of(post, checkListResponseDto);
     }
@@ -140,13 +139,13 @@ public class PostService {
             throw new InvalidValueException(INVALID_POST_DATE);
     }
 
-    private Post createPostAndSave(PostCreateRequestDto postCreateRequestDto, User user) {
-        Post post = Post.createPost(postCreateRequestDto, user);
+    private Post createPostAndSave(PostEnumDto postRequestDto, User user) {
+        Post post = Post.createPost(postRequestDto, user);
         postRepository.save(post);
         return post;
     }
 
-    private void createPostCheckListAndSave(CheckListRequestDto checkListRequestDto, Post post) {
+    private void createPostCheckListAndSave(CheckListEnumDto checkListRequestDto, Post post) {
         PostCheckList postCheckList = PostCheckList.createPostCheckList(checkListRequestDto, post);
         postCheckListRepository.save(postCheckList);
     }

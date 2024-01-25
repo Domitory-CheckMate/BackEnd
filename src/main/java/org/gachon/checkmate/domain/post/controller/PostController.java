@@ -2,8 +2,7 @@ package org.gachon.checkmate.domain.post.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
-import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
 import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
 import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
@@ -58,7 +57,7 @@ public class PostController {
     @PatchMapping("/{id}")
     public ResponseEntity<SuccessResponse<?>> updateMyPost(@UserId final Long userId,
                                                            @PathVariable("id") final Long postId,
-                                                           @RequestBody @Valid final PostUpdateRequestDto requestDto) {
+                                                           @RequestBody @Valid final PostRequestDto requestDto) {
         PostUpdateResponseDto responseDto = postService.updateMyPost(userId, postId, requestDto);
         return SuccessResponse.ok(responseDto);
     }
@@ -73,7 +72,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<SuccessResponse<?>> createPost(@UserId final Long userId,
-                                                         @RequestBody @Valid final PostCreateRequestDto requestDto) {
+                                                         @RequestBody @Valid final PostRequestDto requestDto) {
         postService.createPost(userId, requestDto);
         return SuccessResponse.created(null);
     }

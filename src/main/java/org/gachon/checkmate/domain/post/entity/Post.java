@@ -5,9 +5,9 @@ import lombok.*;
 import org.gachon.checkmate.domain.checkList.entity.PostCheckList;
 import org.gachon.checkmate.domain.member.entity.User;
 import org.gachon.checkmate.domain.post.converter.*;
-import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
+import org.gachon.checkmate.domain.post.dto.request.PostRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
-import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
+import org.gachon.checkmate.domain.post.dto.support.PostEnumDto;
 import org.gachon.checkmate.domain.scrap.entity.Scrap;
 import org.gachon.checkmate.global.common.BaseTimeEntity;
 
@@ -47,16 +47,16 @@ public class Post extends BaseTimeEntity {
     @Builder.Default
     private List<Scrap> scrapList = new ArrayList<>();
 
-    public static Post createPost(PostCreateRequestDto postCreateRequestDto, User user) {
+    public static Post createPost(PostEnumDto postRequestDto, User user) {
         Post post = Post.builder()
-                .title(postCreateRequestDto.title())
-                .content(postCreateRequestDto.content())
-                .endDate(postCreateRequestDto.endDate())
+                .title(postRequestDto.title())
+                .content(postRequestDto.content())
+                .endDate(postRequestDto.endDate())
                 .postState(PostState.RECRUITING)
-                .roomType(postCreateRequestDto.roomType())
-                .dormitoryType(postCreateRequestDto.dormitoryType())
-                .importantKeyType(postCreateRequestDto.importantKey())
-                .similarityKeyType(postCreateRequestDto.similarityKey())
+                .roomType(postRequestDto.roomType())
+                .dormitoryType(postRequestDto.dormitoryType())
+                .importantKeyType(postRequestDto.importantKey())
+                .similarityKeyType(postRequestDto.similarityKey())
                 .user(user)
                 .build();
         user.addPost(post);
@@ -71,7 +71,7 @@ public class Post extends BaseTimeEntity {
         this.scrapList.add(scrap);
     }
 
-    public void updatePost(PostUpdateRequestDto postUpdateRequestDto) {
+    public void updatePost(PostEnumDto postUpdateRequestDto) {
         this.title = postUpdateRequestDto.title();
         this.content = postUpdateRequestDto.content();
         this.importantKeyType = postUpdateRequestDto.importantKey();
