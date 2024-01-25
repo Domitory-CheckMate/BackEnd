@@ -33,6 +33,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                         user.major,
                         user.mbtiType,
                         user.gender,
+                        post.roomType,
+                        post.dormitoryType,
                         user.name,
                         user.profile,
                         post.postCheckList
