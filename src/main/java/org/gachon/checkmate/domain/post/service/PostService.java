@@ -109,6 +109,14 @@ public class PostService {
         return PostStateUpdateResponseDto.of(post);
     }
 
+    public PostDeleteResponseDto deleteMyPost(Long userId, Long postId) {
+        User user = getUserOrThrow(userId);
+        Post post = getPostOrThrow(postId);
+        validatePostWriter(user, post);
+        deletePost(post);
+        return PostDeleteResponseDto.of(true);
+    }
+
     private List<PostSearchElementResponseDto> createPostSearchResponseDto(Page<PostSearchDto> postSearchDtoList, CheckList checkList) {
         return postSearchDtoList.stream()
                 .map(postSearchDto ->
@@ -181,5 +189,9 @@ public class PostService {
     private Post getPostOrThrow(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException(POST_NOT_FOUND));
+    }
+
+    private void deletePost(Post post) {
+        postRepository.delete(post);
     }
 }

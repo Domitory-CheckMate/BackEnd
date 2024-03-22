@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.gachon.checkmate.domain.post.dto.request.PostCreateRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostUpdateRequestDto;
 import org.gachon.checkmate.domain.post.dto.request.PostStateUpdateRequestDto;
-import org.gachon.checkmate.domain.post.dto.response.PostDetailResponseDto;
-import org.gachon.checkmate.domain.post.dto.response.PostSearchResponseDto;
-import org.gachon.checkmate.domain.post.dto.response.PostStateUpdateResponseDto;
-import org.gachon.checkmate.domain.post.dto.response.PostUpdateResponseDto;
+import org.gachon.checkmate.domain.post.dto.response.*;
 import org.gachon.checkmate.domain.post.service.PostService;
 import org.gachon.checkmate.global.common.SuccessResponse;
 import org.gachon.checkmate.global.config.auth.UserId;
@@ -52,6 +49,13 @@ public class PostController {
     public ResponseEntity<SuccessResponse<?>> getMyPosts(@UserId final Long userId,
                                                          final Pageable pageable) {
         final PostSearchResponseDto responseDto = postService.getMyPosts(userId, pageable);
+        return SuccessResponse.ok(responseDto);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponse<?>> deleteMyPost(@UserId final Long userId,
+                                                           @PathVariable("id") final Long postId) {
+        PostDeleteResponseDto responseDto = postService.deleteMyPost(userId, postId);
         return SuccessResponse.ok(responseDto);
     }
 
