@@ -12,6 +12,8 @@ public record PostDetailResponseDto(
         String profile,
         String gender,
         String mbti,
+        String roomType,
+        String dormitoryType,
         boolean isScrap,
         CheckListResponseDto checkList
 ) {
@@ -22,6 +24,8 @@ public record PostDetailResponseDto(
                 .major(postDetailDto.major())
                 .profile(postDetailDto.profile())
                 .gender(postDetailDto.gender().getDesc())
+                .roomType(postDetailDto.roomType().getDesc())
+                .dormitoryType(postDetailDto.dormitoryType().getDesc())
                 .mbti(postDetailDto.mbti().getDesc())
                 .isScrap(isScrap)
                 .checkList(checkList)
